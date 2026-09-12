@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>عيادتي — نظام إدارة العيادة</title>
+<meta name="theme-color" content="#1b5a8c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%231b5a8c'/%3E%3Cpath d='M24 12v24M12 24h24' stroke='%232ba085' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#1b5a8c;--primary-d:#164a73;--teal:#2ba085;--grad:linear-gradient(135deg,#2ba085,#1b5a8c);
+  --acc:#1b5a8c;--bg:#f1f6f7;--card:rgba(255,255,255,.68);--card-s:#ffffff;
+  --text:#0d2137;--muted:#5b7186;--border:rgba(20,60,100,.10);
+  --ok:#0ea371;--warn:#d97706;--err:#e11d48;--info:#0891b2;
+  --primary-soft:rgba(27,90,140,.10);--teal-soft:rgba(43,160,133,.13);
+  --shadow:0 10px 34px rgba(10,50,90,.10);--r:16px;
+  --chatbg:#e7dfd6;--bme:#d9fdd3;--bthem:#fff;--bme-t:#111b12;--bthem-t:#111;
+}
+[data-theme=dark]{
+  --acc:#4da3ff;--bg:#05080d;--card:rgba(13,20,30,.68);--card-s:#0d1420;
+  --text:#e8f0f8;--muted:#93a4b8;--border:rgba(120,180,255,.10);
+  --primary-soft:rgba(77,163,255,.14);--teal-soft:rgba(43,160,133,.16);
+  --shadow:0 10px 34px rgba(0,0,0,.5);
+  --chatbg:#0b141a;--bme:#005c4b;--bthem:#202c33;--bme-t:#e9edef;--bthem-t:#e9edef;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',system-ui,sans-serif;color:var(--text);font-size:14.5px;line-height:1.65;min-height:100vh;overflow-x:hidden;
+background:radial-gradient(900px 420px at 90% -10%,var(--teal-soft),transparent),radial-gradient(900px 500px at -10% 0%,var(--primary-soft),transparent),var(--bg)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14.5px;color:var(--text)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+.mt{margin-top:14px}.mt2{margin-top:24px}.mb{margin-bottom:12px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.spacer{flex:1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+.pad{padding:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:11px 18px;font-weight:800;font-size:14px;background:var(--grad);color:#fff;transition:.15s;min-height:44px;box-shadow:0 6px 16px rgba(27,90,140,.25)}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border:1.5px solid var(--border);color:var(--text);box-shadow:none}
+.btn.ghost:hover{border-color:var(--acc);color:var(--acc)}
+.btn.soft{background:var(--teal-soft);color:var(--teal);box-shadow:none}
+.btn.danger{background:var(--err)}
+.btn.oks{background:var(--ok)}
+.btn.sm{padding:7px 12px;font-size:13px;min-height:36px;border-radius:10px}
+.btn.block{width:100%}.btn:disabled{opacity:.5;cursor:not-allowed}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--acc);position:relative;flex:0 0 auto}
+.icon-btn:hover{border-color:var(--acc)}
+.dot{position:absolute;top:-5px;inset-inline-end:-5px;background:var(--err);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.field{margin-bottom:12px}
+.flabel{display:block;font-weight:700;font-size:13px;margin-bottom:6px;color:var(--muted)}
+.inp{width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--card-s);outline:none;transition:.15s;min-height:46px}
+textarea.inp{min-height:84px;resize:vertical}
+.inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--primary-soft)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0 14px}
+.hint{color:var(--muted);font-size:13px;padding:8px 2px}.hint.err{color:var(--err);font-weight:700}
+.pwd{position:relative}.pwd .inp{padding-inline-end:48px}
+.pwd .eye{position:absolute;top:50%;transform:translateY(-50%);inset-inline-end:8px;border:none;background:none;color:var(--muted);width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.meter{height:6px;border-radius:6px;background:var(--border);margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;border-radius:6px;transition:.3s}
+.mtxt{font-size:11.5px;margin-top:4px;color:var(--muted);font-weight:700}
+.switch{position:relative;display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-weight:700}
+.switch input{display:none}
+.switch .tr{width:46px;height:26px;border-radius:20px;background:var(--border);transition:.2s;flex:0 0 auto;position:relative}
+.switch .tr::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;inset-inline-start:3px;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.25)}
+.switch input:checked+.tr{background:var(--teal)}
+.switch input:checked+.tr::after{inset-inline-start:23px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:14px}
+.scard{display:flex;align-items:center;gap:12px;padding:16px}
+.scard .ic{width:48px;height:48px;border-radius:14px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 6px 14px rgba(27,90,140,.25)}
+.scard .val{font-size:20px;font-weight:900;line-height:1.25;word-break:break-word}
+.scard .lbl{color:var(--muted);font-size:12.5px;font-weight:700}
+.tbl{width:100%;border-collapse:collapse;min-width:560px}
+.tbl th{font-size:12px;color:var(--muted);text-align:start;padding:10px 12px;border-bottom:1.5px solid var(--border);white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.twrap{overflow-x:auto}
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800;white-space:nowrap}
+.bdg.ok{background:rgba(14,163,113,.13);color:var(--ok)}.bdg.warn{background:rgba(217,119,6,.14);color:var(--warn)}
+.bdg.err{background:rgba(225,29,72,.12);color:var(--err)}.bdg.info{background:rgba(8,145,178,.13);color:var(--info)}
+.bdg.blue{background:var(--primary-soft);color:var(--acc)}.bdg.mut{background:var(--border);color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:var(--teal-soft);color:var(--teal);font-weight:800;font-size:13px}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--grad);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 auto;background-size:cover;background-position:center;border:none}
+.empty{text-align:center;padding:44px 18px;color:var(--muted)}
+.empty svg{opacity:.5;margin-bottom:10px}.empty b{display:block;color:var(--text);font-size:15.5px;margin-bottom:4px}
+.shell{display:flex;min-height:100vh}
+.side{width:264px;background:var(--card);backdrop-filter:blur(18px);border-inline-end:1px solid var(--border);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;transition:width .25s ease,transform .25s ease;z-index:50;flex:0 0 auto}
+.side.mini{width:80px}
+.side.mini .stxt,.side.mini .logoTxt,.side.mini .side-foot span{display:none}
+.side.mini .side-link{justify-content:center;padding:12px}
+.logoRow{display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--border)}
+.logoTxt{font-weight:900;font-size:19px;color:var(--acc)}
+.side-nav{padding:12px 10px;overflow-y:auto;flex:1}
+.side-link{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:12px;font-weight:800;color:var(--muted);margin-bottom:3px;transition:.15s;width:100%;border:none;background:none;font-size:14px;text-align:start}
+.side-link svg{color:var(--acc)}
+.side-link:hover{background:var(--primary-soft);color:var(--acc)}
+.side-link.active{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(27,90,140,.35)}
+.side-link.active svg{color:#fff}
+.side-foot{padding:12px;border-top:1px solid var(--border)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--card);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+.ptitle{font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.content{padding:20px;width:100%;max-width:1320px;margin:0 auto}
+.ovl{position:fixed;inset:0;background:rgba(4,10,20,.5);z-index:45;display:none}
+.ovl.show{display:block}
+.langtxt{font-size:11px;font-weight:900}
+@media(max-width:900px){
+  .side{position:fixed;inset-inline-start:0;transform:translateX(110%);height:100dvh;box-shadow:var(--shadow)}
+  [dir=ltr] .side{transform:translateX(-110%)}
+  .side.open{transform:none!important}
+  .desk{display:none!important}.content{padding:14px}
+}
+@media(min-width:901px){.mob{display:none!important}}
+.drop-anchor{position:relative}
+.drop{position:absolute;top:calc(100% + 8px);inset-inline-end:0;width:340px;max-width:88vw;background:var(--card-s);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);display:none;z-index:80;overflow:hidden;animation:pop .16s ease}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.drop.open{display:block}
+.drop .dhead{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--border);font-weight:900}
+.drop-item{display:flex;gap:10px;align-items:center;width:100%;padding:12px 15px;border:none;background:none;font-weight:700;color:var(--text);text-align:start;font-size:13.5px}
+.drop-item:hover{background:var(--primary-soft);color:var(--acc)}
+.drop-item svg{color:var(--acc)}.drop-item.red{color:var(--err)}.drop-item.red svg{color:var(--err)}
+.nitem{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;align-items:flex-start}
+.nitem:last-child{border:none}
+.nitem.unread{background:var(--primary-soft)}
+.nitem .nic{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:var(--teal-soft);color:var(--teal)}
+.nitem time{display:block;color:var(--muted);font-size:11px}
+.mov{position:fixed;inset:0;background:rgba(5,12,25,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal{background:var(--card-s);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);width:100%;max-width:560px;max-height:92dvh;overflow-y:auto;padding:20px}
+.modal.wide{max-width:780px}
+.mrow{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+#toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;width:min(94vw,430px)}
+.toast{background:var(--card-s);border:1px solid var(--border);border-inline-start:4px solid var(--ok);border-radius:12px;box-shadow:var(--shadow);padding:12px 16px;font-weight:800;opacity:0;transform:translateY(14px);transition:.25s;font-size:13.5px}
+.toast.err{border-inline-start-color:var(--err)}.toast.info{border-inline-start-color:var(--info)}
+.toast.on{opacity:1;transform:none}
+.auth{min-height:100dvh;display:flex;align-items:stretch}
+.auth .brand{flex:1;background:var(--grad);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;padding:30px;text-align:center}
+.auth .brand img{width:150px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.25));background:#fff;border-radius:24px;padding:10px}
+.auth .brand h1{font-size:30px;font-weight:900}
+.auth .brand p{max-width:380px;opacity:.95}
+.auth .formside{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
+.auth .abox{width:100%;max-width:520px;padding:30px 26px}
+.auth .homebtn{position:absolute;top:16px;inset-inline-start:16px}
+@media(max-width:860px){.auth{flex-direction:column}.auth .brand{padding:22px}.auth .brand img{width:96px}}
+.linkbtn{background:none;border:none;color:var(--acc);font-weight:800;font-size:13.5px;display:inline-flex;align-items:center;gap:5px}
+.land-head{display:flex;align-items:center;gap:10px;padding:12px 5vw;position:sticky;top:0;background:var(--card);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);z-index:30;flex-wrap:wrap}
+.hero{padding:60px 5vw 40px;text-align:center}
+.hero .logoimg{width:170px;margin-bottom:8px}
+.hero h1{font-size:clamp(30px,5.5vw,54px);font-weight:900;line-height:1.3}
+.hero h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:640px;margin:12px auto 24px;font-size:16.5px}
+.hero .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero .btn{padding:14px 26px;font-size:15.5px;border-radius:14px}
+.lsec{padding:36px 5vw;max-width:1150px;margin:0 auto}
+.lsec h2{font-size:25px;text-align:center;margin-bottom:6px;font-weight:900}
+.lsec .sub{text-align:center;color:var(--muted);margin-bottom:24px}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.feat .card{padding:20px}
+.feat .ic{width:50px;height:50px;border-radius:15px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.feat h3{font-size:16px;margin-bottom:5px}.feat p{color:var(--muted);font-size:13.5px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;counter-reset:st}
+.steps .card{padding:18px;text-align:center;position:relative;counter-increment:st}
+.steps .card::before{content:counter(st);width:34px;height:34px;border-radius:50%;background:var(--grad);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.lfoot{padding:26px 5vw;text-align:center;color:var(--muted);border-top:1px solid var(--border);margin-top:30px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:9px;margin-top:10px}
+.slot{padding:10px 6px;border-radius:11px;border:1.5px solid var(--border);background:var(--card-s);font-weight:800;font-size:13.5px;color:var(--text)}
+.slot:hover{border-color:var(--acc);color:var(--acc)}
+.slot.sel{background:var(--grad);color:#fff;border-color:transparent}
+.slot.dis{opacity:.4;text-decoration:line-through;pointer-events:none}
+.qbig{display:flex;flex-direction:column;align-items:center;gap:2px;padding:20px}
+.qbig .n{font-size:48px;font-weight:900;color:var(--acc);line-height:1.1}
+.qrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.qrow:last-child{border-bottom:none}
+.qnum{width:46px;height:46px;border-radius:13px;background:var(--grad);color:#fff;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.chatwrap{display:grid;grid-template-columns:310px 1fr;height:calc(100dvh - 170px);min-height:460px;overflow:hidden}
+.convlist{border-inline-end:1px solid var(--border);overflow-y:auto;background:var(--card-s)}
+.conv{display:flex;gap:10px;align-items:center;width:100%;padding:12px;border:none;background:none;border-bottom:1px solid var(--border);text-align:start}
+.conv:hover,.conv.active{background:var(--primary-soft)}
+.conv .cm{flex:1;min-width:0}
+.conv .nm{font-weight:800;font-size:13.5px;display:flex;justify-content:space-between;gap:6px}
+.conv .lm{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.thread{display:flex;flex-direction:column;min-width:0;background:var(--chatbg)}
+.thead{display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--card-s);border-bottom:1px solid var(--border)}
+.tmsgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:6px}
+.bubble{max-width:78%;padding:8px 12px;border-radius:12px;font-size:13.5px;word-break:break-word;position:relative;box-shadow:0 1px 1px rgba(0,0,0,.12)}
+.bubble.me{background:var(--bme);color:var(--bme-t);align-self:flex-end;border-end-end-radius:4px}
+.bubble.them{background:var(--bthem);color:var(--bthem-t);align-self:flex-start;border-end-start-radius:4px}
+.bubble .meta{display:flex;gap:5px;justify-content:flex-end;align-items:center;font-size:10px;opacity:.7;margin-top:3px}
+.bubble .ticks{color:#53bdeb;font-weight:900}
+.bubble img{max-width:220px;border-radius:10px;display:block}
+.chatin{display:flex;gap:8px;padding:10px;background:var(--card-s);border-top:1px solid var(--border);align-items:center}
+.chatin .inp{flex:1;min-height:44px;border-radius:22px}
+@media(max-width:800px){.chatwrap{grid-template-columns:1fr}.chatwrap.intalk .convlist{display:none}.chatwrap:not(.intalk) .thread{display:none}}
+.rximg{width:100%;border-radius:10px;border:1px solid var(--border);background:#fff}
+.rxrow{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 2fr 40px;gap:8px;margin-bottom:8px}
+@media(max-width:800px){.rxrow{grid-template-columns:1fr 1fr}}
+.fileitem{display:flex;align-items:center;gap:11px;padding:11px 13px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.fileitem:last-child{border:none}
+.pnav{position:fixed;bottom:0;left:0;right:0;background:var(--card-s);border-top:1px solid var(--border);display:none;z-index:60;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.pnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;color:var(--muted);font-size:10.5px;font-weight:800;padding:5px 2px;border-radius:10px}
+.pnav button.active{color:var(--acc)}
+@media(max-width:900px){.pnav{display:flex}.patient-mode .content{padding-bottom:96px}}
+.sk{border-radius:12px;background:linear-gradient(90deg,var(--border) 25%,var(--card) 50%,var(--border) 75%);background-size:200% 100%;animation:sk 1.2s infinite;height:70px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.loading{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="app"><div class="auth"><div class="formside"><div class="abox card"><div class="sk"></div><div class="sk mt"></div><div class="sk mt"></div></div></div></div></div>
+<div id="modal"></div>
+<div id="toasts"></div>
+<script>
+'use strict';
+const CONFIG={KEY:'eyadaty_db_v4',SKEY:'eyadaty_session_v4',MODE:'server',API_BASE:'/api',POLL:5000};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const Err=m=>new Error(m);
+const todayStr=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+let LANG=localStorage.getItem('ey_lang')||'ar';
+const ui={theme:localStorage.getItem('ey_theme')||'light',sideMini:false};
+const L_EN={logout:'Logout',login:'Login',register:'Register',home:'Home',patients:'Patients',appointments:'Appointments',queue:'Queue',prescriptions:'Prescriptions',settings:'Settings',dashboard:'Dashboard',accounts:'Accounts',payments:'Payments',chat:'Customer Service',notifications:'Notifications',myappts:'My Appointments',myfile:'Medical File',files:'Lab & Files',book:'Book',doctor:'Doctor',date:'Date',time:'Time',status:'Status',actions:'Actions',name:'Name',phone:'Phone',email:'Email',password:'Password',save:'Save',cancel:'Cancel',confirm:'Confirm',search:'Search',add:'Add',today:'Today',revenue:'Revenue',waiting:'Waiting',completed:'Completed',cancelled:'Cancelled',paid:'Paid',unpaid:'Unpaid',amount:'Amount',startDay:'Start Day',endDay:'End Day',next:'Next Patient',call:'Call',skip:'Skip',price:'Consultation Price'};
+const t=(k,fb)=>(LANG==='en'&&L_EN[k])||fb||k;
+const fmtD=s=>{try{return new Date(s+(s.length===10?'T00:00':'')).toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}catch(e){return s}};
+const fmtT=iso=>{try{return new Date(iso).toLocaleTimeString(LANG==='ar'?'ar-EG':'en-GB',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
+function relTime(iso){const d=(Date.now()-new Date(iso).getTime())/1000;if(d<60)return t('now','الآن');if(d<3600)return t('agoM','منذ')+' '+Math.floor(d/60)+(LANG==='ar'?' د':'m');if(d<86400)return t('agoH','منذ')+' '+Math.floor(d/3600)+(LANG==='ar'?' س':'h');return fmtD(iso.slice(0,10))}
+function applyTheme(){document.documentElement.dataset.theme=ui.theme}
+function applyLang(){document.documentElement.lang=LANG;document.documentElement.dir=LANG==='ar'?'rtl':'ltr'}
+const ICONS={menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 8.8V21h13V8.8"/>',users:'<circle cx="9" cy="8" r="3.4"/><path d="M2.7 20c0-3.4 2.8-5.6 6.3-5.6s6.3 2.2 6.3 5.6"/><path d="M15.4 4.3a3.4 3.4 0 0 1 0 6.6M17.6 14.6c2.5.8 3.9 2.7 3.9 5.4"/>',user:'<circle cx="12" cy="8" r="3.8"/><path d="M4.5 21c0-3.8 3.3-6.2 7.5-6.2s7.5 2.4 7.5 6.2"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/>',list:'<path d="M8.5 6h12M8.5 12h12M8.5 18h12"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',pill:'<path d="M8.6 3.4a4.8 4.8 0 0 1 6.8 6.8l-5.2 5.2a4.8 4.8 0 1 1-6.8-6.8z"/><path d="M9.3 8.5l6.2 6.2"/>',sliders:'<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="15" cy="6" r="2.2"/><circle cx="8" cy="12" r="2.2"/><circle cx="17" cy="18" r="2.2"/>',bell:'<path d="M6 9a6 6 0 1 1 12 0c0 5 2 6.2 2 6.2H4S6 14 6 9"/><path d="M10.4 19.8a1.9 1.9 0 0 0 3.2 0"/>',moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18"/>',logout:'<path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M16 17l5-5-5-5M21 12H9"/>',plus:'<path d="M12 5v14M5 12h14"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',check:'<path d="M4 12.5l5 5L20 7"/>',download:'<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>',upload:'<path d="M12 21V9M7 13.5l5-5 5 5M5 3h14"/>',eye:'<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',eyeoff:'<path d="M2.5 12S6 5.5 12 5.5c1.6 0 3 .4 4.3 1.1M21.5 12S18 18.5 12 18.5c-1.6 0-3-.4-4.2-1"/><path d="M4 4l16 16"/>',chat:'<path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.6 0-3.1-.4-4.4-1.2L3 20l1.3-4.7A8.5 8.5 0 1 1 21 11.5z"/>',send:'<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',clip:'<path d="M21.4 11l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/>',cash:'<rect x="2" y="6" width="20" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/>',chart:'<path d="M3 21h18M6 21V10M11 21V4M16 21v-7M21 21V7"/>',doc:'<path d="M14 2H7a1.5 1.5 0 0 0-1.5 1.5v17A1.5 1.5 0 0 0 7 22h10a1.5 1.5 0 0 0 1.5-1.5V6.5z"/><path d="M14 2v5h4.5M9 13h6M9 17h6"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1A19.5 19.5 0 0 1 5.2 12.8 19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6.2 6.2l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.5 2.8.6a2 2 0 0 1 1.7 2z"/>',steth:'<path d="M6 3v5a5 5 0 0 0 10 0V3"/><path d="M11 13v3.5a4.5 4.5 0 0 0 9 0V15"/><circle cx="20" cy="12.8" r="1.9"/>',back:'<path d="M15 18l-6-6 6-6"/>',alert:'<path d="M12 3 22 21H2z"/><path d="M12 9.5v4.5M12 17.5h.01"/>',heart:'<path d="M12 20.5c-5.5-4-9-7.2-9-11A5 5 0 0 1 12 6a5 5 0 0 1 9 3.5c0 3.8-3.5 7-9 11z"/>',edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'};
+const ic=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]||''}</svg>`;
+const LOGO_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 340"><defs><linearGradient id="g" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2ba085"/><stop offset="1" stop-color="#1b5a8c"/></linearGradient><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f7fae"/><stop offset="1" stop-color="#17548c"/></linearGradient></defs><path d="M112 46 C 62 70 44 122 60 166 C 76 212 122 250 156 268 C 176 258 200 242 220 222" fill="none" stroke="url(#g)" stroke-width="17" stroke-linecap="round"/><path d="M196 42 C 246 66 262 118 248 160 C 240 184 224 208 204 228 L 232 214" fill="none" stroke="url(#g)" stroke-width="17" stroke-linecap="round"/><circle cx="112" cy="40" r="11" fill="url(#g)"/><circle cx="196" cy="36" r="11" fill="url(#g)"/><circle cx="248" cy="222" r="16" fill="none" stroke="url(#g)" stroke-width="13"/><g fill="url(#b)"><rect x="138" y="96" width="34" height="110" rx="6"/><rect x="138" y="96" width="34" height="110" rx="6" transform="rotate(60 155 151)"/><rect x="138" y="96" width="34" height="110" rx="6" transform="rotate(120 155 151)"/></g><path d="M112 190 C 150 182 186 148 208 106" fill="none" stroke="#2ba085" stroke-width="11" stroke-linecap="round"/><path d="M212 96 l-26 4 16 22 z" fill="#2ba085"/><text x="160" y="322" text-anchor="middle" font-family="Cairo, sans-serif" font-weight="800" font-size="64" fill="#17548c">عيادتي</text></svg>`;
+const LOGO_URI='data:image/svg+xml,'+encodeURIComponent(LOGO_SVG);
+const logoSrc=()=>S().logo||LOGO_URI;
+async function hashPw(pw,salt){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+'::'+pw));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=2166136261;const s=salt+'::'+pw;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'f'+(h>>>0).toString(16)}}
+function checkPwPolicy(pw){if(!pw||pw.length<8)throw Err(t('pwLen','كلمة المرور 8 أحرف على الأقل'));if(!/[A-Z]/.test(pw))throw Err(t('pwUp','يجب أن تحتوي على حرف كبير (A-Z)'));if(!/[a-z]/.test(pw))throw Err(t('pwLo','يجب أن تحتوي على حرف صغير (a-z)'));if(!/[0-9]/.test(pw))throw Err(t('pwNum','يجب أن تحتوي على رقم'));if(!/[^A-Za-z0-9]/.test(pw))throw Err(t('pwSym','يجب أن تحتوي على رمز خاص مثل @ أو #'))}
+function openModal(html,cls=''){$('#modal').innerHTML=`<div class="mov" data-act="mBg"><div class="modal ${cls}">${html}</div></div>`}
+function closeModal(){$('#modal').innerHTML=''}
+function confirmDlg(msg){return new Promise(res=>{openModal(`<h3 class="mb">${esc(msg)}</h3><div class="mrow"><button class="btn ghost" id="mNo">${t('cancel','إلغاء')}</button><button class="btn danger" id="mOk">${t('confirm','تأكيد')}</button></div>`);$('#mOk').onclick=()=>{closeModal();res(true)};$('#mNo').onclick=()=>{closeModal();res(false)}})}
+function toast(msg,type='ok'){const d=document.createElement('div');d.className='toast '+type;d.innerHTML=msg;$('#toasts').appendChild(d);requestAnimationFrame(()=>d.classList.add('on'));setTimeout(()=>{d.classList.remove('on');setTimeout(()=>d.remove(),300)},3400)}
+function pwdField(name,label,val='',extra=''){return`<div class="field"><label class="flabel">${label}</label><div class="pwd"><input class="inp" type="password" name="${name}" value="${esc(val)}" data-strength="${extra}" autocomplete="new-password" required><button type="button" class="eye" data-act="eye">${ic('eye')}</button></div>${extra?`<div class="meter"><i id="${extra}bar"></i></div><div class="mtxt" id="${extra}txt"></div>`:''}</div>`}
+function paintStrength(v,pre){const bar=$('#'+pre+'bar'),tx=$('#'+pre+'txt');if(!bar)return;let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[a-z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;const w=[0,20,40,60,80,100][s],c=['','#e11d48','#e11d48','#d97706','#0ea371','#0ea371'][s],lbl=['',t('pwWeak','ضعيفة'),t('pwWeak','ضعيفة'),t('pwMed','متوسطة'),t('pwStrong','قوية'),t('pwVStrong','قوية جدًا')][s];bar.style.width=w+'%';bar.style.background=c;tx.textContent=v?`${t('pwStr','قوة كلمة المرور')}: ${lbl}`:'';tx.style.color=c}
+const readURL=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
+const defaultSettings=()=>({clinicName:'عيادتي',logo:'',phone:'',address:'',workStart:'09:00',workEnd:'17:00',workDays:[0,1,2,3,4,5,6],appointmentDuration:15,dailyLimit:20,consultationPrice:200,currency:'ج.م',bookingOpen:true,requireWorkingToday:true,_rev:0});
+const DB={data:null,
+ blank(){return{users:[],appointments:[],queue_tickets:[],visits:[],prescriptions:[],medical_files:[],payments:[],notifications:[],messages:[],audit_logs:[],branches:[],services:[],lab_orders:[],radiology_orders:[],assessments:[],follow_ups:[],invoices:[],settings:defaultSettings()}},
+ async load(){
+  if(CONFIG.MODE==='server'){try{const r=await fetch(CONFIG.API_BASE+'/db');if(r.ok){const j=await r.json();if(j&&Object.keys(j).length)DB.data=j}}catch(e){console.warn('خادم قاعدة البيانات غير متاح')}}
+  else{const raw=localStorage.getItem(CONFIG.KEY);if(raw){try{DB.data=JSON.parse(raw)}catch(e){}}}
+  if(!DB.data)DB.data=DB.blank();
+  const b=DB.blank();for(const k in b)if(!(k in DB.data))DB.data[k]=(k==='settings')?defaultSettings():[];
+ },
+ save(){DB.data.settings._rev=(DB.data.settings._rev||0)+1;
+  if(CONFIG.MODE==='server'){clearTimeout(DB._t);DB._t=setTimeout(()=>{fetch(CONFIG.API_BASE+'/db',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(DB.data)}).catch(()=>toast(t('saveErr','تعذر الحفظ على الخادم المحلي'),'err'))},250)}
+  else{try{localStorage.setItem(CONFIG.KEY,JSON.stringify(DB.data))}catch(e){toast(t('storageFull','مساحة التخزين ممتلئة — احذف بعض الملفات'),'err')}}},
+ all(x){return DB.data[x]||[]},get(x,id){return DB.all(x).find(r=>r.id===id)},
+ insert(x,row){row.id=row.id||uid();row.createdAt=row.createdAt||new Date().toISOString();DB.all(x).push(row);DB.save();return row},
+ update(x,id,p){const r=DB.get(x,id);if(r){Object.assign(r,p);DB.save()}return r},
+ remove(x,id){DB.data[x]=DB.all(x).filter(r=>r.id!==id);DB.save()}};
+const S=()=>DB.data.settings;
+const money=n=>`${(+n||0).toLocaleString(LANG==='ar'?'ar-EG':'en-GB')} ${S().currency||''}`;
+const Auth={get(){try{return JSON.parse(localStorage.getItem(CONFIG.SKEY))}catch(e){return null}},
+ set(u){localStorage.setItem(CONFIG.SKEY,JSON.stringify({uid:u.id,role:u.role,exp:Date.now()+12*3600e3}))},
+ clear(){localStorage.removeItem(CONFIG.SKEY)},
+ user(){const s=Auth.get();if(!s||Date.now()>s.exp)return null;const u=DB.get('users',s.uid);return(u&&u.active)?u:null}};
+const homeOf=r=>({admin:'#/admin',doctor:'#/doctor',receptionist:'#/reception',manager:'#/manager',patient:'#/patient'}[r]||'#/');
+const rolePath=r=>({admin:'admin',doctor:'doctor',receptionist:'reception',manager:'manager',patient:'patient'}[r]);
+function audit(userId,role,action,details){DB.insert('audit_logs',{userId,role,action,details:details||''});if(DB.all('audit_logs').length>600){DB.data.audit_logs=DB.all('audit_logs').slice(-600);DB.save()}}
+function notify(userId,body,type){if(!userId)return;DB.insert('notifications',{userId,body,type:type||'info',read:false});if(DB.all('notifications').length>1200){DB.data.notifications=DB.all('notifications').slice(-1200);DB.save()}}
+const notifUnread=id=>DB.all('notifications').filter(n=>n.userId===id&&!n.read).length;
+const svc={
+ firstRun:()=>!DB.all('users').some(u=>u.role==='admin'),
+ doctors:()=>DB.all('users').filter(u=>u.role==='doctor'),
+ activeDoctors(){return svc.doctors().filter(d=>d.active)},
+ effPrice:d=>(d&&d.price!=null&&d.price!=='')?+d.price:S().consultationPrice,
+ effLimit:d=>(d&&d.dailyLimit!=null&&d.dailyLimit!=='')?+d.dailyLimit:S().dailyLimit,
+ effDur:d=>(d&&d.duration!=null&&d.duration!=='')?+d.duration:S().appointmentDuration,
+ dayLimit(d,date){const o=(d.dayLimits||[]).find(r=>r.date===date);return o?+o.limit:svc.effLimit(d)},
+ clinicOpenNow(){return S().bookingOpen&&svc.activeDoctors().some(d=>d.isWorking)},
+ myDoctor(u){const tk=DB.all('queue_tickets').find(q=>q.patientId===u.id&&q.date===todayStr());if(tk)return DB.get('users',tk.doctorId);
+  const ap=DB.all('appointments').find(a=>a.patientId===u.id&&a.date===todayStr()&&a.status!=='cancelled');if(ap)return DB.get('users',ap.doctorId);
+  return svc.activeDoctors()[0]||null},
+ myTicket(u){return DB.all('queue_tickets').find(q=>q.patientId===u.id&&q.date===todayStr()&&q.status!=='cancelled')},
+ bookingCheck(d,date){
+  if(!d||!d.active)return{ok:false,msg:t('noDoc','الطبيب غير متاح')};
+  if(!S().bookingOpen)return{ok:false,msg:t('clinicClosed','الحجز مغلق حاليًا من إدارة العيادة')};
+  if(d.bookingOpen===false)return{ok:false,msg:t('docClosedBooking','تم إغلاق الحجز لهذا اليوم، يمكنك الحجز ليوم آخر')};
+  if((d.closedDates||[]).includes(date))return{ok:false,msg:t('docClosedDay','الدكتور قفل باب الحجز لهذا اليوم — احجز لبكره')};
+  if(date<todayStr())return{ok:false,msg:t('pastDate','لا يمكن الحجز في تاريخ سابق')};
+  const wd=new Date(date+'T00:00:00').getDay();
+  if(!(S().workDays||[]).includes(wd))return{ok:false,msg:t('offDay','هذا اليوم إجازة للعيادة')};
+  if(date===todayStr()&&S().requireWorkingToday&&!d.isWorking)return{ok:false,msg:t('docOffToday','الطبيب لم يبدأ العمل اليوم بعد — يمكنك الحجز ليوم آخر')};
+  const cnt=DB.all('appointments').filter(a=>a.doctorId===d.id&&a.date===date&&a.status!=='cancelled').length;
+  if(cnt>=svc.dayLimit(d,date))return{ok:false,msg:t('limitReached','اكتمل العدد المسموح للحجوزات لهذا اليوم — احجز لبكره')};
+  return{ok:true}},
+ slots(d,date){const out=[];const[sH,sM]=S().workStart.split(':').map(Number);const[eH,eM]=S().workEnd.split(':').map(Number);
+  const dur=svc.effDur(d);let cur=sH*60+sM;const end=eH*60+eM;
+  const taken=DB.all('appointments').filter(a=>a.doctorId===d.id&&a.date===date&&a.status!=='cancelled').map(a=>a.time);
+  const now=new Date(),isT=date===todayStr(),nowM=now.getHours()*60+now.getMinutes();
+  while(cur+dur<=end){const tm=`${String(Math.floor(cur/60)).padStart(2,'0')}:${String(cur%60).padStart(2,'0')}`;
+   out.push({time:tm,taken:taken.includes(tm)||(isT&&cur<=nowM)});cur+=dur}
+  return out},
+ makeTicket(a){const tix=DB.all('queue_tickets').filter(q=>q.doctorId===a.doctorId&&q.date===a.date);
+  const num=tix.reduce((m,q)=>Math.max(m,q.number),0)+1;
+  const tk=DB.insert('queue_tickets',{appointmentId:a.id,patientId:a.patientId,doctorId:a.doctorId,date:a.date,number:num,status:'waiting'});
+  DB.update('appointments',a.id,{status:'checked_in'});return tk},
+ book({patientId,doctorId,date,time,by}){
+  const d=DB.get('users',doctorId);const chk=svc.bookingCheck(d,date);if(!chk.ok)throw Err(chk.msg);
+  const sl=svc.slots(d,date).find(s=>s.time===time);if(!sl||sl.taken)throw Err(t('slotTaken','هذا الموعد محجوز، اختر وقتًا آخر'));
+  const a=DB.insert('appointments',{patientId,doctorId,date,time,status:'booked',paymentStatus:'unpaid',price:svc.effPrice(d),createdBy:by});
+  let msg=`${t('apptOk','تم تأكيد حجزك')} — ${fmtD(date)} ${time}`;
+  if(date===todayStr()){const tk=svc.makeTicket(a);msg+=` · ${t('yourNumIs','رقمك في الطابور')}: ${tk.number}`}
+  notify(patientId,msg,'APPT_CONFIRMED');
+  notify(doctorId,`${t('newAppt','حجز جديد')}: ${DB.get('users',patientId)?.name||''} — ${fmtD(date)} ${time}`,'APPT_NEW');
+  audit(by,'','APPOINTMENT_CREATED',`${date} ${time}`);return a},
+ cancelAppt(id,by){const a=DB.get('appointments',id);if(!a)return;DB.update('appointments',id,{status:'cancelled'});
+  const tk=DB.all('queue_tickets').find(q=>q.appointmentId===id);if(tk)DB.update('queue_tickets',tk.id,{status:'cancelled'});
+  notify(a.patientId,`${t('apptCancelled','تم إلغاء موعدك')} — ${fmtD(a.date)} ${a.time}`,'APPT_CANCELLED');audit(by,'','APPOINTMENT_CANCELLED',id)},
+ checkIn(apptId,by){const a=DB.get('appointments',apptId);if(!a)throw Err(t('notFound','غير موجود'));
+  if(a.status!=='booked')throw Err(t('cantCheckin','لا يمكن تسجيل الوصول لهذا الموعد'));
+  const tk=svc.makeTicket(a);notify(a.patientId,`${t('checkedIn','تم تسجيل وصولك — رقمك في الطابور')}: ${tk.number}`,'CHECKIN');audit(by,'','CHECKIN',a.id)},
+ tickets(doctorId,date=todayStr()){return DB.all('queue_tickets').filter(q=>q.doctorId===doctorId&&q.date===date&&q.status!=='cancelled').sort((a,b)=>a.number-b.number)},
+ currentNumber(doctorId,date=todayStr()){return svc.tickets(doctorId,date).filter(q=>['called','in_consultation','completed'].includes(q.status)).reduce((m,q)=>Math.max(m,q.number),0)},
+ ahead(tk){return svc.tickets(tk.doctorId,tk.date).filter(q=>q.number<tk.number&&['waiting','called','in_consultation'].includes(q.status)).length},
+ estWait(tk){return svc.ahead(tk)*svc.effDur(DB.get('users',tk.doctorId))},
+ notifyNear(doctorId){svc.tickets(doctorId).filter(q=>q.status==='waiting'&&!q.nearNotified).slice(0,2).forEach(q=>{notify(q.patientId,t('turnNear','اقترب دورك، يرجى الاستعداد'),'NEAR');DB.update('queue_tickets',q.id,{nearNotified:true})})},
+ qCall(id,by){const q=DB.get('queue_tickets',id);if(!q)return;DB.update('queue_tickets',id,{status:'called',nearNotified:false});notify(q.patientId,`${t('yourTurn','حان دورك الآن — توجه لغرفة الكشف')} (${q.number})`,'TURN');svc.notifyNear(q.doctorId);audit(by,'','QUEUE_CALL',String(q.number))},
+ qStart(id){const q=DB.get('queue_tickets',id);DB.update('queue_tickets',id,{status:'in_consultation'});if(q)DB.update('appointments',q.appointmentId,{status:'in_consultation'})},
+ qSkip(id,by){const q=DB.get('queue_tickets',id);DB.update('queue_tickets',id,{status:'skipped'});if(q){notify(q.patientId,t('skipped','تم تخطي رقمك — راجع الاستقبال'),'SKIP');svc.notifyNear(q.doctorId)}audit(by,'','QUEUE_SKIP','')},
+ qRecall(id){DB.update('queue_tickets',id,{status:'called'});const q=DB.get('queue_tickets',id);if(q)notify(q.patientId,`${t('recalled','إعادة استدعاء')} (${q.number})`,'TURN')},
+ saveVisit(ticketId,data,rx,by){const q=DB.get('queue_tickets',ticketId);if(!q)throw Err(t('notFound','غير موجود'));
+  const v=DB.insert('visits',{appointmentId:q.appointmentId,patientId:q.patientId,doctorId:q.doctorId,date:q.date,...data});
+  DB.update('queue_tickets',ticketId,{status:'completed'});DB.update('appointments',q.appointmentId,{status:'completed'});svc.notifyNear(q.doctorId);
+  if(rx&&rx.items&&rx.items.length)svc.saveRx({patientId:q.patientId,doctorId:q.doctorId,items:rx.items,notes:rx.notes,diagnosis:data.diagnosis,visitId:v.id},by);
+  notify(q.patientId,t('visitDone','تم إنهاء الكشف وتحديث ملفك الطبي'),'VISIT');audit(by,'','VISIT_CREATED',v.id);return v},
+ saveRx({patientId,doctorId,items,notes,visitId,diagnosis},by){const rx=DB.insert('prescriptions',{patientId,doctorId,visitId:visitId||null,items,notes:notes||'',diagnosis:diagnosis||'',date:todayStr()});notify(patientId,t('rxAdded','تمت إضافة روشتة جديدة إلى ملفك'),'RX');audit(by,'','PRESCRIPTION_CREATED',rx.id);return rx},
+ pay(apptId,method,by){const a=DB.get('appointments',apptId);if(!a)throw Err(t('notFound','غير موجود'));
+  if(a.paymentStatus==='paid')throw Err(t('alreadyPaid','تم الدفع بالفعل'));
+  DB.insert('payments',{appointmentId:a.id,patientId:a.patientId,doctorId:a.doctorId,amount:a.price,method,date:a.date,status:'paid',createdBy:by?.id,createdByRole:by?.role});
+  DB.update('appointments',apptId,{paymentStatus:'paid'});
+  notify(a.patientId,`${t('paidOk','تم دفع قيمة الكشف')}: ${money(a.price)} ✓`,'PAID');audit(by?.id,by?.role,'PAYMENT_CREATED',`${a.price}`)},
+ revenue(from,to){return DB.all('payments').filter(p=>(!from||p.date>=from)&&(!to||p.date<=to)).reduce((s,p)=>s+(+p.amount||0),0)},
+ addFile(o){DB.insert('medical_files',o);audit(o.by,'','FILE_UPLOADED',o.name)},
+ sendMsg({patientId,senderId,senderRole,body,attachment}){DB.insert('messages',{patientId,senderId,senderRole,body:body||'',attachment:attachment||null,readAt:null});
+  if(senderRole==='patient')DB.all('users').filter(u=>u.role==='receptionist'&&u.active).forEach(r=>notify(r.id,`${t('newMsg','رسالة جديدة من')}: ${DB.get('users',senderId)?.name||''}`,'MSG'));
+  else notify(patientId,t('newMsgR','رسالة جديدة من خدمة العملاء'),'MSG')},
+ markChatRead(patientId,viewerRole){DB.all('messages').filter(m=>m.patientId===patientId&&!m.readAt&&(viewerRole==='patient'?m.senderRole!=='patient':m.senderRole==='patient')).forEach(m=>DB.update('messages',m.id,{readAt:new Date().toISOString()}))},
+ changePassword(userId,cur,next){const u=DB.get('users',userId);if(!u)throw Err(t('notFound','غير موجود'));
+  return(async()=>{if(await hashPw(cur,u.salt)!==u.hash)throw Err(t('wrongCur','كلمة المرور الحالية غير صحيحة'));checkPwPolicy(next);const salt=uid();DB.update('users',userId,{salt,hash:await hashPw(next,salt)});audit(userId,u.role,'PASSWORD_CHANGED','')})()}
+};
+const stAppt={booked:['محجوز','Booked','blue'],checked_in:['مسجل وصول','Checked-in','warn'],in_consultation:['في الكشف','Consulting','info'],completed:['مكتمل','Completed','ok'],cancelled:['ملغي','Cancelled','err']};
+const stTick={waiting:['منتظر','Waiting','warn'],called:['تم النداء','Called','blue'],in_consultation:['في الكشف','Consulting','info'],completed:['مكتمل','Done','ok'],skipped:['متخطي','Skipped','mut'],cancelled:['ملغي','Cancelled','err']};
+const stB=(m,s)=>{const x=m[s]||[s,s,'mut'];return`<span class="bdg ${x[2]}">${LANG==='en'?x[1]:x[0]}</span>`};
+const payB=a=>a.paymentStatus==='paid'?`<span class="bdg ok">${t('paid','مدفوع')} ✓</span>`:`<span class="bdg warn">${t('unpaid','غير مدفوع')}</span>`;
+const av=u=>{const pic=u?.profilePic?`style="background-image:url(${u.profilePic})"`:'';return`<span class="avatar" ${pic}>${u?.profilePic?'':esc((u?.name||'؟').trim()[0]||'؟')}</span>`};
+const emptyHtml=(tt,sub)=>`<div class="empty">${ic('alert',40)}<b>${esc(tt)}</b>${sub?`<div>${esc(sub)}</div>`:''}</div>`;
+const statCards=l=>`<div class="cards">${l.map(c=>`<div class="card scard"><div class="ic">${ic(c.i)}</div><div><div class="val">${c.v}</div><div class="lbl">${c.l}</div></div></div>`).join('')}</div>`;
+async function rxPNG(rx){
+ const pat=DB.get('users',rx.patientId),doc=DB.get('users',rx.doctorId),s=S();
+ const c=document.createElement('canvas');c.width=794;c.height=1123;const x=c.getContext('2d');
+ x.fillStyle='#fff';x.fillRect(0,0,794,1123);
+ const g=x.createLinearGradient(0,0,794,0);g.addColorStop(0,'#2ba085');g.addColorStop(1,'#1b5a8c');x.fillStyle=g;x.fillRect(0,0,794,8);
+ const im=new Image();im.src=logoSrc();
+ try{await new Promise((res,rej)=>{im.onload=res;im.onerror=rej});x.drawImage(im,40,26,88,94)}catch(e){}
+ x.textAlign='right';x.direction='rtl';
+ x.fillStyle='#17548c';x.font='900 30px Cairo';x.fillText(s.clinicName,754,66);
+ x.fillStyle='#5b7186';x.font='600 12px Cairo';x.fillText([s.phone,s.address].filter(Boolean).join(' · '),754,88);
+ x.fillText(`${doc?.name||''}${doc?.specialty?' — '+doc.specialty:''}`,754,106);
+ x.strokeStyle='#dbe4f0';x.beginPath();x.moveTo(40,128);x.lineTo(754,128);x.stroke();
+ x.fillStyle='#0d2137';x.font='700 13px Cairo';
+ x.fillText(`${t('patient','المريض')}: ${pat?.name||''}`,754,152);
+ x.fillText(`${t('date','التاريخ')}: ${new Date().toLocaleDateString(LANG==='ar'?'ar-EG':'en-GB')}`,754,172);
+ if(pat?.dob)x.fillText(`${t('dob','تاريخ الميلاد')}: ${pat.dob}`,400,152);
+ x.fillStyle='#1b5a8c';x.font='900 26px Cairo';x.fillText('℞',60,160);
+ let y=200;
+ if(rx.diagnosis){x.fillStyle='#17548c';x.font='700 13.5px Cairo';x.fillText(`${t('diag','التشخيص')}: ${rx.diagnosis}`,754,y);y+=14;x.strokeStyle='#e6edf5';x.beginPath();x.moveTo(40,y);x.lineTo(754,y);x.stroke();y+=22}
+ rx.items.forEach((it,i)=>{
+  x.fillStyle='#17548c';x.font='800 14px Cairo';x.fillText(`${i+1}. ${it.medicine}`,754,y);
+  const line=[it.dose&&`${t('dose','الجرعة')}: ${it.dose}`,it.frequency&&`${t('freq','التكرار')}: ${it.frequency}`,it.duration&&`${t('duration','المدة')}: ${it.duration}`].filter(Boolean).join('   ·   ');
+  x.fillStyle='#42566b';x.font='600 11.5px Cairo';
+  if(line)x.fillText(line,754,y+17);
+  if(it.instructions)x.fillText(`${t('instr','تعليمات')}: ${it.instructions}`,754,y+(line?34:17));
+  y+=(line?34:17)+(it.instructions?17:0)+14;
+  x.strokeStyle='#eef2f7';x.beginPath();x.moveTo(60,y-8);x.lineTo(754,y-8);x.stroke();
+ });
+ if(rx.notes){x.fillStyle='#5b7186';x.font='600 12px Cairo';x.fillText(`${t('rxNotes','ملاحظات')}: ${rx.notes}`,754,y+8)}
+ x.strokeStyle='#dbe4f0';x.beginPath();x.moveTo(40,1040);x.lineTo(754,1040);x.stroke();
+ x.fillStyle='#5b7186';x.font='600 11.5px Cairo';x.textAlign='center';
+ x.fillText(`${s.clinicName} — ${t('rxFoot','نتمنى لك الشفاء العاجل')}`,397,1066);
+ x.fillText(t('sig','توقيع الطبيب'),640,1010);
+ return c.toDataURL('image/png')}
+async function showRxModal(rx){
+ openModal(`<h3 class="mb">${t('rxPreview','معاينة الروشتة')}</h3><div id="rxHold" style="text-align:center">${ic('clock',30)}<div class="hint">${t('generating','جارٍ توليد الروشتة...')}</div></div>
+ <div class="mrow"><button class="btn" id="rxDl" style="display:none">${ic('download',16)} ${t('download','تحميل PNG')}</button><button class="btn ghost" data-act="closeModal">${t('close','إغلاق')}</button></div>`,'wide');
+ try{const u=await rxPNG(rx);const h=$('#rxHold');if(h)h.innerHTML=`<img class="rximg" src="${u}" alt="prescription">`;
+  const d=$('#rxDl');if(d){d.style.display='';d.onclick=()=>{const a=document.createElement('a');a.href=u;a.download='prescription-'+rx.id+'.png';a.click()}}}
+ catch(e){const h=$('#rxHold');if(h)h.innerHTML=`<div class="hint err">${t('rxErr','تعذر توليد الروشتة')}</div>`}}
+const NAV={
+ doctor:[['#/doctor','home','الرئيسية','Dashboard'],['#/doctor/patients','users','المرضى','Patients'],['#/doctor/appointments','calendar','المواعيد','Appointments'],['#/doctor/queue','list','الطابور','Queue'],['#/doctor/prescriptions','pill','الروشتات','Prescriptions'],['#/doctor/clinical','list','التحاليل والأشعة','Clinical modules'],['#/doctor/settings','sliders','الإعدادات','Settings']],
+ receptionist:[['#/reception','home','الرئيسية','Dashboard'],['#/reception/appointments','calendar','المواعيد','Appointments'],['#/reception/new','plus','حجز جديد','New Appointment'],['#/reception/patients','users','المرضى','Patients'],['#/reception/queue','list','الطابور','Queue'],['#/reception/payments','cash','المدفوعات','Payments'],['#/reception/chat','chat','خدمة العملاء','Customer Service'],['#/reception/settings','sliders','الإعدادات','Settings']],
+ manager:[['#/manager','home','الرئيسية','Dashboard'],['#/manager/settings','sliders','إعدادات العيادة','Clinic Settings']],
+ admin:[['#/admin','home','الرئيسية','Dashboard'],['#/admin/accounts','users','الحسابات','Accounts'],['#/admin/modules','list','الأقسام الطبية','Clinical modules'],['#/admin/settings','sliders','الإعدادات','Settings']],
+ patient:[['#/patient','home','الرئيسية','Home'],['#/patient/appointments','calendar','مواعيدي','My Appointments'],['#/patient/queue','list','الطابور','Queue'],['#/patient/file','doc','ملفي الطبي','Medical File'],['#/patient/prescriptions','pill','الروشتات','Prescriptions'],['#/patient/files','upload','التحاليل والملفات','Lab & Files'],['#/patient/notifications','bell','الإشعارات','Notifications'],['#/patient/chat','chat','خدمة العملاء','Customer Service'],['#/patient/settings','sliders','الإعدادات','Settings']]};
+function sideInner(u){const base='#/'+rolePath(u.role);
+ const links=NAV[u.role].map(([href,icn,ar,en])=>{const h=location.hash||base;
+  const act=(href===base)?(h===base||h==='#/'):h.startsWith(href);
+  return`<a href="${href}" class="side-link ${act?'active':''}">${ic(icn)}<span class="stxt">${LANG==='en'?en:ar}</span></a>`}).join('');
+ return`<div class="logoRow"><img src="${logoSrc()}" style="width:38px;border-radius:10px;${S().logo?'':'background:#fff;padding:2px'}"><span class="logoTxt">${esc(S().clinicName)}</span></div>
+ <nav class="side-nav">${links}</nav>
+ <div class="side-foot"><div class="row">${av(u)}<span><b style="font-size:13px">${esc(u.name)}</b><br><small style="color:var(--muted)">${{admin:'مدير النظام',doctor:'طبيب',receptionist:'استقبال',manager:'مدير العيادة',patient:'مريض'}[u.role]}</small></span></div></div>`}
+const NTYPES={APPT_CONFIRMED:['calendar','var(--teal-soft)','var(--teal)'],APPT_CANCELLED:['x','rgba(225,29,72,.12)','var(--err)'],TURN:['bell','var(--primary-soft)','var(--acc)'],NEAR:['clock','rgba(217,119,6,.14)','var(--warn)'],PAID:['cash','rgba(14,163,113,.13)','var(--ok)'],RX:['pill','var(--teal-soft)','var(--teal)'],MSG:['chat','var(--primary-soft)','var(--acc)'],CHECKIN:['list','var(--primary-soft)','var(--acc)'],VISIT:['doc','var(--teal-soft)','var(--teal)']};
+function bellHtml(u){const un=notifUnread(u.id);
+ const items=DB.all('notifications').filter(n=>n.userId===u.id).slice(-8).reverse().map(n=>{const m=NTYPES[n.type]||['bell','var(--primary-soft)','var(--acc)'];
+  return`<div class="nitem ${n.read?'':'unread'}"><span class="nic" style="background:${m[1]};color:${m[2]}">${ic(m[0],16)}</span><div style="flex:1;min-width:0"><div>${esc(n.body)}</div><time>${relTime(n.createdAt)}</time></div></div>`}).join('')||`<div class="nitem">${t('noNotif','لا توجد إشعارات')}</div>`;
+ return`<div class="drop-anchor"><button class="icon-btn" data-act="drop" data-drop-target="#notifDrop">${ic('bell')}${un?`<span class="dot">${un}</span>`:''}</button>
+ <div class="drop" id="notifDrop"><div class="dhead"><span>${t('notifications','الإشعارات')}</span><button class="linkbtn" data-act="readAll">${t('readAll','تحديد الكل كمقروء')}</button></div><div style="max-height:330px;overflow-y:auto">${items}</div>${u.role==='patient'?`<div style="padding:8px;border-top:1px solid var(--border)"><button class="linkbtn" data-act="goto" data-h="#/patient/notifications">${t('viewAll','عرض الكل')} ←</button></div>`:''}</div></div>`}
+function shell(u,title,content){const base='#/'+rolePath(u.role);
+ const docExtra=u.role==='doctor'?`
+  <button class="drop-item" data-act="${u.isWorking?'endDay':'startDay'}">${ic(u.isWorking?'clock':'steth')}<span>${u.isWorking?t('endDay','إنهاء اليوم'):t('startDay','بدء اليوم')}</span></button>
+  <button class="drop-item" data-act="${(u.closedDates||[]).includes(todayStr())?'openToday':'closeToday'}">${ic('calendar')}<span>${(u.closedDates||[]).includes(todayStr())?t('openToday','فتح حجز اليوم'):t('closeToday','إغلاق حجز اليوم')}</span></button>
+  <button class="drop-item" data-act="dayLimits">${ic('chart')}<span>${t('dayLimits','حدود الحجوزات اليومية')}</span></button>
+  <button class="drop-item" data-act="goto" data-h="#/doctor/appointments">${ic('calendar')}<span>${t('todayAppts','مواعيد اليوم')}</span></button>`:'';
+ return`<div class="shell ${u.role==='patient'?'patient-mode':''}">
+ <aside class="side ${ui.sideMini?'mini':''}" id="side">${sideInner(u)}</aside>
+ <div class="ovl" id="ovl" data-act="menu"></div>
+ <div class="main"><header class="topbar">
+  <button class="icon-btn mob" data-act="menu">${ic('menu')}</button>
+  <button class="icon-btn desk" data-act="collapse" title="طي/فتح القائمة">${ic('menu')}</button>
+  <h1 class="ptitle">${title}</h1><div class="spacer"></div>
+  <button class="icon-btn" data-act="theme">${ic(ui.theme==='dark'?'sun':'moon')}</button>
+  <button class="icon-btn" data-act="lang">${ic('globe')}<span class="langtxt">${LANG==='ar'?'EN':'ع'}</span></button>
+  ${bellHtml(u)}
+  <div class="drop-anchor"><button style="border:none;background:none;padding:0" data-act="drop" data-drop-target="#profDrop">${av(u)}</button>
+   <div class="drop" id="profDrop"><div class="dhead">${esc(u.name)}</div>
+   ${docExtra}
+   <button class="drop-item" data-act="goto" data-h="${base}/settings">${ic('sliders')}<span>${t('settings','الإعدادات')}</span></button>
+   <button class="drop-item red" data-act="logout">${ic('logout')}<span>${t('logout','تسجيل الخروج')}</span></button></div></div>
+  <button class="btn danger sm" data-act="logout" title="${t('logout','تسجيل الخروج')}">${ic('logout',17)}<span class="desk">${t('logout','خروج')}</span></button>
+ </header><div class="content">${content}</div></div>
+ ${u.role==='patient'?pnavHtml():''}</div>`}
+function pnavHtml(){const h=location.hash||'#/patient';
+ const it=[['#/patient','home','الرئيسية'],['#/patient/appointments','calendar','مواعيدي'],['#/patient/queue','list','الطابور'],['#/patient/chat','chat','الخدمة']];
+ return`<nav class="pnav">${it.map(([hr,i,l])=>`<button data-act="goto" data-h="${hr}" class="${h.startsWith(hr)?'active':''}">${ic(i)}${l}</button>`).join('')}<button data-act="menu">${ic('menu')}${t('more','المزيد')}</button></nav>`}
+function authLayout(inner){return`<div class="auth">
+ <div class="brand"><img src="${logoSrc()}" alt="عيادتي"><h1>${esc(S().clinicName)}</h1><p>${t('brandP','نظام واحد يربط المريض بالطبيب والاستقبال والإدارة — احجز، تابع دورك، واستلم روشتتك رقميًا.')}</p></div>
+ <div class="formside"><button class="icon-btn homebtn" data-act="goto" data-h="#/" title="${t('home','الرئيسية')}">${ic('home')}</button>
+ <div class="abox card">${inner}
+  <div class="row mt" style="justify-content:center;gap:14px">
+   <button class="linkbtn" data-act="theme">${ic(ui.theme==='dark'?'sun':'moon',15)} ${t('theme','المظهر')}</button>
+   <button class="linkbtn" data-act="lang">${ic('globe',15)} ${LANG==='ar'?'English':'العربية'}</button>
+  </div></div></div></div>`}
+function slotsBoxHTML(){return`<div class="field"><label class="flabel">${t('avail','المواعيد المتاحة')}</label><div class="slots" data-slotbox><div class="hint">${t('pickDocDate','اختر الطبيب والتاريخ أولًا')}</div></div><input type="hidden" name="time"></div>`}
+function renderSlots(form){if(!form)return;const box=form.querySelector('[data-slotbox]');const hid=form.querySelector('[name=time]');
+ const dId=form.querySelector('[name=doctorId]')?.value,date=form.querySelector('[name=date]')?.value;
+ if(hid)hid.value='';if(!box)return;
+ const d=dId?DB.get('users',dId):null;
+ if(!d||!date){box.innerHTML=`<div class="hint">${t('pickDocDate','اختر الطبيب والتاريخ أولًا')}</div>`;return}
+ const chk=svc.bookingCheck(d,date);
+ if(!chk.ok){box.innerHTML=`<div class="hint err">${esc(chk.msg)}</div>`;return}
+ const sl=svc.slots(d,date);
+ if(!sl.length){box.innerHTML=`<div class="hint">${t('noSlots','لا توجد مواعيد متاحة')}</div>`;return}
+ box.innerHTML=sl.map(s=>`<button type="button" class="slot ${s.taken?'dis':''}" ${s.taken?'disabled':''} data-act="pickSlot" data-time="${s.time}">${s.time}</button>`).join('')}
+function chatView(u,pid){const isStaff=u.role!=='patient';let convs=[];
+ if(isStaff){const byP={};DB.all('messages').forEach(m=>{if(!byP[m.patientId]||byP[m.patientId].createdAt<m.createdAt)byP[m.patientId]=m});
+  convs=Object.entries(byP).map(([p,last])=>({p:DB.get('users',p),last,unread:DB.all('messages').filter(m=>m.patientId===p&&m.senderRole==='patient'&&!m.readAt).length})).filter(c=>c.p).sort((a,b)=>b.last.createdAt.localeCompare(a.last.createdAt))}
+ if(pid&&isStaff)svc.markChatRead(pid,'staff');
+ const active=pid?DB.get('users',pid):null;
+ const msgs=pid?DB.all('messages').filter(m=>m.patientId===pid):[];
+ const mine=m=>isStaff?m.senderRole!=='patient':m.senderRole==='patient';
+ const ticks=m=>mine(m)?`<span class="ticks">${m.readAt?'✓✓':'✓'}</span>`:'';
+ const convList=isStaff?`<div class="convlist">${convs.length?convs.map(c=>`<button class="conv ${c.p.id===pid?'active':''}" data-act="goto" data-h="#/${rolePath(u.role)}/chat/${c.p.id}">${av(c.p)}<span class="cm"><span class="nm">${esc(c.p.name)}<time>${fmtT(c.last.createdAt)}</time></span><span class="lm">${esc(c.last.body||(c.last.attachment?'📎 '+c.last.attachment.fileName:''))}</span></span>${c.unread?`<span class="dot" style="position:static">${c.unread}</span>`:''}</button>`).join(''):emptyHtml(t('noConvs','لا محادثات بعد'))}</div>`:'';
+ const thread=pid?`<div class="thread">
+  <div class="thead">${isStaff?`<button class="icon-btn" data-act="goto" data-h="#/${rolePath(u.role)}/chat">${ic('back',17)}</button>`:''}${av(active)}<b>${esc(active?.name||'')}</b><div class="spacer"></div><span class="bdg blue">${t('cs','خدمة العملاء')}</span></div>
+  <div class="tmsgs" id="thread">${msgs.length?msgs.map(m=>`<div class="bubble ${mine(m)?'me':'them'}">${m.attachment?`<a href="${m.attachment.dataUrl}" download="${esc(m.attachment.fileName)}" style="color:inherit">📎 ${esc(m.attachment.fileName)}</a><br>`:''}${esc(m.body)}<span class="meta">${fmtT(m.createdAt)} ${ticks(m)}</span></div>`).join(''):`<div class="empty" style="padding:20px">${t('startChat','ابدأ المحادثة — اكتب أي سؤال وسيصلك الرد هنا')}</div>`}</div>
+  <form class="chatin" data-form="chat" data-pid="${pid}">
+   <input type="file" id="chatFile" hidden data-change="chatAttach">
+   <button type="button" class="icon-btn" onclick="document.getElementById('chatFile').click()">${ic('clip',18)}</button>
+   <input class="inp" name="body" placeholder="${t('typeMsg','اكتب رسالة...')}" autocomplete="off">
+   <button class="btn" type="submit" style="width:48px;padding:0;border-radius:50%">${ic('send',18)}</button>
+  </form><div id="attChip" style="padding:0 12px;background:var(--card-s)"></div></div>`
+ :`<div class="thread"><div class="empty">${ic('chat',44)}<b>${t('pickConv','اختر محادثة')}</b></div></div>`;
+ return`<div class="card chatwrap ${pid?'intalk':''}" style="overflow:hidden">${convList}${thread}</div>`}
+function clinicSettingsForm(){const s=S();
+ const days=[['6',t('sat','السبت')],['0',t('sun','الأحد')],['1',t('mon','الاثنين')],['2',t('tue','الثلاثاء')],['3',t('wed','الأربعاء')],['4',t('thu','الخميس')],['5',t('fri','الجمعة')]];
+ return`<form data-form="clinicSet">
+ <div class="card pad mb"><b>${t('clinicInfo','بيانات العيادة والبراند')}</b>
+  <div class="fgrid mt">
+   <div class="field"><label class="flabel">${t('clinicName','اسم العيادة')}</label><input class="inp" name="clinicName" value="${esc(s.clinicName)}" required></div>
+   <div class="field"><label class="flabel">${t('phone','الهاتف')}</label><input class="inp" name="phone" value="${esc(s.phone)}" dir="ltr"></div>
+   <div class="field"><label class="flabel">${t('address','العنوان')}</label><input class="inp" name="address" value="${esc(s.address)}"></div>
+   <div class="field"><label class="flabel">${t('logo','اللوجو')}</label><input class="inp" type="file" accept="image/*" data-change="logoPick"></div>
+  </div></div>
+ <div class="card pad mb"><b>${t('workHours','مواعيد العمل والحجز')}</b>
+  <div class="fgrid mt">
+   <div class="field"><label class="flabel">${t('workStart','بداية العمل')}</label><input class="inp" type="time" name="workStart" value="${s.workStart}"></div>
+   <div class="field"><label class="flabel">${t('workEnd','نهاية العمل')}</label><input class="inp" type="time" name="workEnd" value="${s.workEnd}"></div>
+   <div class="field"><label class="flabel">${t('dur','مدة الكشف (دقيقة)')}</label><input class="inp" type="number" min="5" name="appointmentDuration" value="${s.appointmentDuration}"></div>
+   <div class="field"><label class="flabel">${t('dailyLimit','الحد اليومي للحجوزات')}</label><input class="inp" type="number" min="1" name="dailyLimit" value="${s.dailyLimit}"></div>
+   <div class="field"><label class="flabel">${t('price','سعر الكشف')}</label><input class="inp" type="number" min="0" name="consultationPrice" value="${s.consultationPrice}"></div>
+   <div class="field"><label class="flabel">${t('currency','العملة')}</label><input class="inp" name="currency" value="${esc(s.currency)}"></div>
+  </div>
+  <div class="field"><label class="flabel">${t('workDays','أيام العمل')}</label>
+   <div class="row">${days.map(([v,l])=>`<label class="switch"><input type="checkbox" name="workDays" value="${v}" ${(s.workDays||[]).includes(+v)?'checked':''}><span class="tr"></span>${l}</label>`).join('')}</div></div>
+  <div class="row mt">
+   <label class="switch"><input type="checkbox" name="bookingOpen" ${s.bookingOpen?'checked':''}><span class="tr"></span>${t('bookingOn2','السماح بالحجز')}</label>
+   <label class="switch"><input type="checkbox" name="requireWorkingToday" ${s.requireWorkingToday?'checked':''}><span class="tr"></span>${t('reqWork','حجز اليوم يتطلب بدء الطبيب للعمل')}</label>
+  </div></div>
+ <button class="btn" type="submit">${ic('check',16)} ${t('save','حفظ الإعدادات')}</button></form>`}
+const changePwCard=()=>`<div class="card pad mt2"><b>${t('changePw','تغيير كلمة المرور')}</b>
+ <form data-form="changePw" class="mt" style="max-width:440px">
+  ${pwdField('cur',t('curPw','كلمة المرور الحالية'))}
+  ${pwdField('nw',t('newPw','كلمة المرور الجديدة'),'','pw1')}
+  ${pwdField('cf',t('confirmPw','تأكيد كلمة المرور'))}
+  <button class="btn" type="submit">${t('changePw','تغيير كلمة المرور')}</button></form></div>`;
+const VIEWS={};
+VIEWS.home=async()=>{const open=svc.clinicOpenNow();
+ const feat=[['calendar',t('f1t','الحجز الذكي'),t('f1d','اختر طبيبك والوقت المناسب، والنظام يتحقق من المواعيد المتاحة والحد اليومي فورًا.')],
+ ['list',t('f2t','متابعة الدور'),t('f2d','رقمك، والدور الحالي، وعدد المرضى أمامك — لحظيًا من هاتفك بدون انتظار في العيادة.')],
+ ['doc',t('f3t','الملف الطبي'),t('f3d','تاريخك الطبي وتحاليلك وأشعتك محفوظة وآمنة ومتاحة لطبيبك بضغطة.')],
+ ['pill',t('f4t','الروشتة الرقمية'),t('f4d','روشتة PNG بتصميم طبي احترافي تحملها على هاتفك وتشاركها مع أي صيدلية.')],
+ ['cash',t('f5t','الدفع والفواتير'),t('f5d','ادفع في الاستقبال وشوف حالة الدفع في حسابك فورًا.')],
+ ['bell',t('f6t','إشعارات فورية'),t('f6d','موعدك، دورك، روشتتك، وكل جديد يصلك في لحظته.')],
+ ['chat',t('f7t','خدمة العملاء'),t('f7d','شات مباشر مع الاستقبال بتجربة واتساب: رسائل، صور، ملفات، وعلامات قراءة.')]];
+ return`<header class="land-head"><img src="${logoSrc()}" style="width:44px;border-radius:12px;${S().logo?'':'background:#fff;padding:2px'}"><b style="font-size:18px;color:var(--acc)">${esc(S().clinicName)}</b>
+  <span class="bdg ${open?'ok':'mut'}">${open?t('openNow','العيادة مفتوحة الآن'):t('closedNow','العيادة مغلقة حاليًا')}</span>
+  <div class="spacer"></div>
+  <button class="icon-btn" data-act="theme">${ic(ui.theme==='dark'?'sun':'moon')}</button>
+  <button class="icon-btn" data-act="lang">${ic('globe')}<span class="langtxt">${LANG==='ar'?'EN':'ع'}</span></button>
+  <button class="btn sm" data-act="goto" data-h="#/register">${t('newPat','مريض جديد')}</button>
+  <button class="btn sm ghost" data-act="goto" data-h="#/login">${t('oldPat','مريض قديم')}</button>
+  <button class="btn sm soft" data-act="goto" data-h="#/login">${ic('chat',15)} ${t('csBtn','خدمة العملاء')}</button></header>
+ <section class="hero"><img class="logoimg" src="${logoSrc()}" alt="عيادتي">
+  <h1>${t('heroT1','صحتك أسهل مع')} <span>${esc(S().clinicName)}</span></h1>
+  <p>${t('heroP','احجز كشفك من هاتفك، تابع دورك لحظة بلحظة بدون زحام، واستلم روشتتك الرقمية — كل ما يخص زيارتك للعيادة في مكان واحد.')}</p>
+  <div class="cta">
+   <button class="btn" data-act="goto" data-h="#/register">${ic('plus',18)} ${t('newPat','مريض جديد')}</button>
+   <button class="btn ghost" data-act="goto" data-h="#/login">${ic('user',18)} ${t('oldPat','مريض قديم')}</button>
+   <button class="btn soft" data-act="goto" data-h="#/login">${ic('chat',18)} ${t('csBtn','خدمة العملاء')}</button>
+  </div></section>
+ <section class="lsec"><h2>${t('howT','كيف يعمل النظام؟')}</h2><p class="sub">${t('howS','أربع خطوات من الحجز حتى الروشتة')}</p>
+  <div class="steps">${[t('s1','سجّل حسابك كمريض'),t('s2','احجز كشفًا واختر موعدك'),t('s3','وصل العيادة وتابع دورك رقمًا برقم'),t('s4','استلم روشتتك الرقمية وحملها على هاتفك')].map(s=>`<div class="card"><p style="font-weight:700">${s}</p></div>`).join('')}</div></section>
+ <section class="lsec"><h2>${t('whyT','لماذا عيادتي؟')}</h2><p class="sub">${t('whyS','نظام واحد يربط المريض بالطبيب والاستقبال والإدارة')}</p>
+  <div class="feat">${feat.map(([i,tt,d])=>`<div class="card"><div class="ic">${ic(i,24)}</div><h3>${tt}</h3><p>${d}</p></div>`).join('')}</div></section>
+ <footer class="lfoot"><img src="${logoSrc()}" style="width:40px;border-radius:10px;${S().logo?'':'background:#fff;padding:2px'}"><div>${esc(S().clinicName)} — ${t('footTag','نظام عيادة واحدة متكامل')} © ${new Date().getFullYear()}</div></footer>`};
+VIEWS.login=async()=>authLayout(`
+ <form data-form="login" id="loginStaff">
+  <h3 class="mb" style="text-align:center">${t('loginT','تسجيل الدخول')}</h3>
+  <div class="field"><label class="flabel">${t('email','البريد الإلكتروني')}</label><input class="inp" type="email" name="email" required></div>
+  ${pwdField('password',t('password','كلمة المرور'))}
+  <button class="btn block" type="submit">${t('login','تسجيل الدخول')}</button>
+  <div class="row mt" style="justify-content:space-between">
+   <button type="button" class="linkbtn" data-act="showAdminLogin">${ic('lock',14)} ${t('adminLogin','دخول المسؤول')}</button>
+   <button type="button" class="linkbtn" data-act="goto" data-h="#/register">${t('newPatQ','مريض جديد؟ سجّل الآن')}</button>
+  </div></form>
+ <form data-form="loginAdmin" id="loginAdmin" style="display:none">
+  <div class="bdg blue mb" style="display:inline-flex">${ic('lock',14)} ${t('adminOnly','دخول المسؤول — كلمة المرور فقط بدون بريد')}</div>
+  ${pwdField('adminpw',t('adminPw','كلمة مرور المسؤول'))}
+  <button class="btn block" type="submit">${t('login','دخول')}</button>
+  <div class="mrow" style="justify-content:center"><button type="button" class="linkbtn" data-act="showStaffLogin">${t('backLogin','← عودة لدخول المستخدمين')}</button></div></form>`);
+VIEWS.register=async()=>authLayout(`
+ <h3 class="mb" style="text-align:center">${t('regT','إنشاء حساب مريض جديد')}</h3>
+ <form data-form="register">
+  <div class="field"><label class="flabel">${t('name','الاسم الكامل')}</label><input class="inp" name="name" required></div>
+  <div class="fgrid">
+   <div class="field"><label class="flabel">${t('email','البريد الإلكتروني')}</label><input class="inp" type="email" name="email" placeholder="email@example.com"></div>
+   <div class="field"><label class="flabel">${t('phone','رقم الهاتف')}</label><input class="inp" name="phone" dir="ltr" placeholder="01xxxxxxxxx"></div>
+  </div>
+  <div class="fgrid">
+   <div class="field"><label class="flabel">${t('dob','تاريخ الميلاد')}</label><input class="inp" type="date" name="dob"></div>
+   <div class="field"><label class="flabel">${t('gender','النوع')}</label><select class="inp" name="gender"><option value="">—</option><option value="m">${t('male','ذكر')}</option><option value="f">${t('female','أنثى')}</option></select></div>
+  </div>
+  <div class="hint" style="padding:0 0 10px">${t('eitherOne','سجّل بالبريد أو الهاتف — أيهما يناسبك')}</div>
+  ${pwdField('password',t('password','كلمة المرور'),'','pw1')}
+  ${pwdField('password2',t('confirmPw','تأكيد كلمة المرور'))}
+  <button class="btn block" type="submit">${t('createAcc','إنشاء الحساب')}</button>
+  <div class="mrow" style="justify-content:center"><button type="button" class="linkbtn" data-act="goto" data-h="#/login">${t('haveAcc','لديك حساب؟ سجّل الدخول')}</button></div></form>`);
+VIEWS.admin=async({u})=>{const us=DB.all('users'),today=todayStr();
+ const stats=[{i:'steth',v:us.filter(x=>x.role==='doctor').length,l:t('doctors','الأطباء')},{i:'phone',v:us.filter(x=>x.role==='receptionist').length,l:t('receptionists','الاستقبال')},{i:'chart',v:us.filter(x=>x.role==='manager').length,l:t('managers','مديرو العيادة')},{i:'users',v:us.filter(x=>x.role==='patient').length,l:t('patients','المرضى')},{i:'calendar',v:DB.all('appointments').filter(a=>a.date===today&&a.status!=='cancelled').length,l:t('todayAppts2','مواعيد اليوم')},{i:'cash',v:money(svc.revenue(today,today)),l:t('todayRev','إيراد اليوم')}];
+ const logs=DB.all('audit_logs').slice(-10).reverse();
+ return shell(u,t('dashboard','لوحة التحكم'),`${statCards(stats)}
+ <div class="grid2 mt2">
+  <div class="card pad"><div class="row mb"><b>${t('quick','إجراءات سريعة')}</b></div>
+   <div class="row"><button class="btn" data-act="goto" data-h="#/admin/accounts">${ic('plus',16)} ${t('addAcc','إضافة / تعديل حساب')}</button>
+   <button class="btn ghost" data-act="goto" data-h="#/admin/settings">${ic('sliders',16)} ${t('clinicSet','إعدادات العيادة')}</button></div>
+   <div class="mt row"><span class="chip">${svc.clinicOpenNow()?t('openNow','العيادة مفتوحة'):t('closedNow','العيادة مغلقة')}</span>
+   <span class="chip">${S().bookingOpen?t('bookingOn','الحجز مفعّل'):t('bookingOff','الحجز مغلق')}</span></div></div>
+  <div class="card pad"><div class="row mb"><b>${t('lastOps','آخر العمليات (Audit)')}</b></div>
+   ${logs.length?`<div class="twrap"><table class="tbl"><tr><th>${t('op','العملية')}</th><th>${t('by','بواسطة')}</th><th>${t('time','الوقت')}</th></tr>
+   ${logs.map(l=>`<tr><td>${esc(l.action)}</td><td>${esc(DB.get('users',l.userId)?.name||l.role||'—')}</td><td><small>${fmtT(l.createdAt)}</small></td></tr>`).join('')}</table></div>`:emptyHtml(t('noOps','لا توجد عمليات بعد'))}</div>
+ </div>`)};
+VIEWS['admin/accounts']=async({u,params})=>{const role=params.get('role')||'doctor';
+ const spec=role==='doctor'?`<div class="field"><label class="flabel">${t('specialty','التخصص')}</label><input class="inp" name="specialty" required></div>`:'';
+ const list=DB.all('users').filter(x=>x.role===role);
+ const tabs=[['doctor',t('doctors','الأطباء')],['receptionist',t('receptionists','الاستقبال')],['manager',t('managers','مديرو العيادة')]];
+ return shell(u,t('accounts','إدارة الحسابات'),`
+ <div class="row mb">${tabs.map(([r,l])=>`<a href="#/admin/accounts?role=${r}" class="btn sm ${r===role?'':'ghost'}">${l}</a>`).join('')}</div>
+ <div class="card pad mb"><b>${t('add','إضافة')} ${tabs.find(x=>x[0]===role)[1]}</b>
+  <form data-form="accCreate" class="mt"><input type="hidden" name="role" value="${role}">
+   <div class="fgrid">
+    <div class="field"><label class="flabel">${t('name','الاسم')}</label><input class="inp" name="name" required></div>
+    <div class="field"><label class="flabel">${t('email','البريد الإلكتروني')}</label><input class="inp" type="email" name="email" required></div>
+    <div class="field"><label class="flabel">${t('phone','الهاتف')}</label><input class="inp" name="phone" dir="ltr"></div>${spec}
+   </div>
+   ${pwdField('password',t('password','كلمة المرور'),'','pw1')}
+   <button class="btn" type="submit">${ic('plus',16)} ${t('create','إنشاء الحساب')}</button></form></div>
+ <div class="card">${list.length?`<div class="twrap"><table class="tbl">
+  <tr><th>${t('name','الاسم')}</th><th>${t('email','البريد')}</th><th>${t('phone','الهاتف')}</th>${role==='doctor'?`<th>${t('specialty','التخصص')}</th>`:''}<th>${t('status','الحالة')}</th><th>${t('actions','إجراءات')}</th></tr>
+  ${list.map(x=>`<tr><td class="row">${av(x)} ${esc(x.name)}</td><td dir="ltr">${esc(x.email)}</td><td dir="ltr">${esc(x.phone||'—')}</td>${role==='doctor'?`<td>${esc(x.specialty||'—')}</td>`:''}
+  <td>${x.active?`<span class="bdg ok">${t('active','نشط')}</span>`:`<span class="bdg err">${t('disabled','معطل')}</span>`}</td>
+  <td class="row">
+   <button class="btn sm ghost" data-act="accEdit" data-id="${x.id}">${ic('edit',14)} ${t('edit','تعديل')}</button>
+   <button class="btn sm ${x.active?'ghost':'oks'}" data-act="accToggle" data-id="${x.id}">${x.active?t('disable','تعطيل'):t('enable','تفعيل')}</button>
+   <button class="btn sm ghost" data-act="accReset" data-id="${x.id}">${ic('lock',14)} ${t('resetPw','كلمة المرور')}</button>
+  </td></tr>`).join('')}</table></div>`:emptyHtml(t('noAccs','لا توجد حسابات بعد'),t('addFirst','أضف أول حساب من النموذج أعلاه'))}</div>`)};
+VIEWS['admin/modules']=async({u})=>{const modules=[
+ ['branches','الفروع','branches','إدارة فروع العيادة وأساميها'],
+ ['services','الخدمات','services','الخدمات والأسعار ومدد الكشف'],
+ ['lab_orders','المعمل','lab_orders','طلبات التحاليل ونتائجها'],
+ ['radiology_orders','الأشعة','radiology_orders','طلبات الأشعة وتقاريرها'],
+ ['assessments','التقييمات','assessments','نماذج التقييم الطبي'],
+ ['follow_ups','المتابعات','follow_ups','مواعيد المتابعة والتنبيهات'],
+ ['invoices','الفواتير','invoices','الفواتير والمدفوعات']
+ ];
+ return shell(u,'الأقسام الطبية',`
+ <div class="cards">${modules.map(([key,label,arr,desc])=>`<div class="card scard"><div class="ic">${ic(key==='services'?'sliders':key==='invoices'?'cash':'list',22)}</div><div><div class="val">${DB.all(arr).length}</div><div class="lbl">${label}</div><small style="color:var(--muted)">${desc}</small></div></div>`).join('')}</div>
+ <div class="grid2 mt2">
+  <div class="card pad"><h3 class="mb">إضافة فرع</h3><form data-form="moduleBranch"><div class="field"><label class="flabel">اسم الفرع</label><input class="inp" name="name" required></div><div class="field"><label class="flabel">العنوان</label><input class="inp" name="address"></div><div class="field"><label class="flabel">الهاتف</label><input class="inp" name="phone" dir="ltr"></div><button class="btn" type="submit">حفظ الفرع</button></form></div>
+  <div class="card pad"><h3 class="mb">إضافة خدمة</h3><form data-form="moduleService"><div class="field"><label class="flabel">اسم الخدمة</label><input class="inp" name="name" required></div><div class="fgrid"><div class="field"><label class="flabel">السعر</label><input class="inp" type="number" min="0" name="price" required></div><div class="field"><label class="flabel">المدة بالدقائق</label><input class="inp" type="number" min="5" name="duration" value="15" required></div></div><button class="btn" type="submit">حفظ الخدمة</button></form></div>
+ </div>
+ <div class="card pad mt2"><h3 class="mb">الفروع والخدمات المسجلة</h3>${DB.all('branches').length||DB.all('services').length?`<div class="twrap"><table class="tbl"><tr><th>النوع</th><th>الاسم</th><th>التفاصيل</th></tr>${DB.all('branches').map(x=>`<tr><td>فرع</td><td>${esc(x.name)}</td><td>${esc(x.address||'—')}</td></tr>`).join('')}${DB.all('services').map(x=>`<tr><td>خدمة</td><td>${esc(x.name)}</td><td>${money(x.price)} / ${esc(x.duration)} دقيقة</td></tr>`).join('')}</table></div>`:emptyHtml('لا توجد فروع أو خدمات بعد')}</div>`)};
+VIEWS['admin/settings']=async({u})=>shell(u,t('settings','الإعدادات'),`${clinicSettingsForm()}
+ <div class="card pad mt2"><b>${t('changeAdminPw','تغيير كلمة مرور المسؤول')}</b>
+  <form data-form="changePw" class="mt" style="max-width:440px">
+   ${pwdField('cur',t('curPw','كلمة المرور الحالية'))}
+   ${pwdField('nw',t('newPw','كلمة المرور الجديدة'),'','pw1')}
+   ${pwdField('cf',t('confirmPw','تأكيد كلمة المرور'))}
+   <button class="btn" type="submit">${t('changePw','تغيير كلمة المرور')}</button></form></div>`);
+VIEWS['manager/settings']=async({u})=>shell(u,t('clinicSet','إعدادات العيادة'),clinicSettingsForm());
+VIEWS.doctor=async({u})=>{const today=todayStr();
+ const appts=DB.all('appointments').filter(a=>a.doctorId===u.id&&a.date===today&&a.status!=='cancelled');
+ const tix=svc.tickets(u.id,today);
+ const stats=[{i:'calendar',v:appts.length,l:t('todayAppts2','مواعيد اليوم')},{i:'clock',v:tix.filter(q=>q.status==='waiting').length,l:t('waiting','منتظرون')},{i:'check',v:tix.filter(q=>q.status==='completed').length,l:t('completed','مكتمل')},{i:'list',v:svc.currentNumber(u.id)||'—',l:t('curNum','الدور الحالي')},{i:'cash',v:money(svc.revenue(today,today)),l:t('todayRev','إيراد اليوم')}];
+ return shell(u,t('dashboard','لوحة الطبيب'),`
+ <div class="card pad mb"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:14px">
+  <div><div class="row">${u.isWorking?`<span class="bdg ok">${t('working','أنت تعمل الآن — يظهر للجميع')}</span>`:`<span class="bdg mut">${t('notWorking','لم تبدأ العمل بعد')}</span>`}
+   ${(u.closedDates||[]).includes(today)?`<span class="bdg err">${t('bookingClosedToday','حجز اليوم مغلق')}</span>`:''}</div>
+   <div class="mt" style="color:var(--muted)">${t('workHours','مواعيد العمل')}: <b dir="ltr">${S().workStart} — ${S().workEnd}</b> · ${t('price','سعر الكشف')}: <b>${money(svc.effPrice(u))}</b> · ${t('dailyLimit','الحد اليومي')}: <b>${svc.dayLimit(u,today)}</b></div></div>
+  <div class="row">
+   <button class="btn ${u.isWorking?'danger':'oks'}" data-act="${u.isWorking?'endDay':'startDay'}">${ic(u.isWorking?'clock':'steth',18)} ${u.isWorking?t('endDay','إنهاء اليوم'):t('startDay','بدء اليوم')}</button>
+   <button class="btn ghost" data-act="${(u.closedDates||[]).includes(today)?'openToday':'closeToday'}">${(u.closedDates||[]).includes(today)?t('openToday','فتح حجز اليوم'):t('closeToday','إغلاق حجز اليوم')}</button>
+  </div></div></div>
+ ${statCards(stats)}
+ <div class="card mt2"><div class="row pad" style="padding-bottom:0"><b>${t('nextAppts','التالية اليوم')}</b><div class="spacer"></div><a class="linkbtn" href="#/doctor/queue">${t('goQueue','إلى الطابور')} ←</a></div>
+ ${appts.length?`<div class="twrap"><table class="tbl"><tr><th>${t('time','الوقت')}</th><th>${t('patient','المريض')}</th><th>${t('status','الحالة')}</th><th>${t('pay','الدفع')}</th></tr>
+ ${appts.sort((a,b)=>a.time.localeCompare(b.time)).slice(0,6).map(a=>`<tr><td><b dir="ltr">${a.time}</b></td><td>${esc(DB.get('users',a.patientId)?.name||'')}</td><td>${stB(stAppt,a.status)}</td><td>${payB(a)}</td></tr>`).join('')}</table></div>`:emptyHtml(t('noApptsToday','لا توجد مواعيد اليوم'))}</div>`)};
+VIEWS['doctor/queue']=async({u})=>{const tix=svc.tickets(u.id);
+ const waiting=tix.filter(q=>q.status==='waiting');const cur=svc.currentNumber(u.id);const inRoom=tix.find(q=>q.status==='in_consultation');
+ const acts=q=>{if(q.status==='waiting')return`<button class="btn sm" data-act="qCall" data-id="${q.id}">${ic('phone',14)} ${t('call','نداء')}</button><button class="btn sm ghost" data-act="qSkip" data-id="${q.id}">${t('skip','تخطي')}</button>`;
+  if(q.status==='called')return`<button class="btn sm oks" data-act="qStart" data-id="${q.id}">${ic('steth',14)} ${t('startConsult','بدء الكشف')}</button><button class="btn sm ghost" data-act="qSkip" data-id="${q.id}">${t('skip','تخطي')}</button>`;
+  if(q.status==='in_consultation')return`<button class="btn sm" data-act="goto" data-h="#/doctor/consult/${q.id}">${ic('doc',14)} ${t('openConsult','فتح الكشف والروشتة')}</button>`;
+  if(q.status==='completed'||q.status==='skipped')return`<button class="btn sm ghost" data-act="qRecall" data-id="${q.id}">${t('recall','إعادة استدعاء')}</button>`;return''};
+ return shell(u,t('queue','الطابور'),`
+ <div class="card pad mb"><div class="row" style="justify-content:space-between;flex-wrap:wrap">
+  <div class="row">${u.isWorking?`<span class="bdg ok">${t('working','تعمل الآن — ظاهر للجميع')}</span>`:`<button class="btn oks" data-act="startDay">${ic('steth',17)} ${t('start','بدء — أنا في العيادة الآن')}</button>`}</div>
+  <div class="row"><span class="chip">${t('curNum','الدور الحالي')}: <b>${cur||'—'}</b></span><span class="chip">${t('waiting','منتظرون')}: <b>${waiting.length}</b></span></div></div></div>
+ <div class="cards mb">
+  <div class="card qbig"><div class="lbl">${t('curNum','الدور الحالي')}</div><div class="n">${cur||'—'}</div></div>
+  <div class="card qbig"><div class="lbl">${t('waiting','منتظرون')}</div><div class="n">${waiting.length}</div></div>
+  <div class="card qbig"><div class="lbl">${t('inRoom','داخل العيادة')}</div><div class="n">${inRoom?inRoom.number:'—'}</div></div>
+  <div class="card qbig" style="justify-content:center"><button class="btn block" data-act="qNext" ${waiting.length?'':'disabled'}>${ic('phone',18)} ${t('nextPat','المريض التالي')}</button></div>
+ </div>
+ <div class="card">${tix.length?tix.map(q=>{const p=DB.get('users',q.patientId);return`<div class="qrow">
+  <div class="qnum">${q.number}</div>
+  <div style="flex:1;min-width:0"><b>${esc(p?.name||'')}</b> <small style="color:var(--muted)">${fmtT(q.createdAt)}</small><br>${stB(stTick,q.status)}</div>
+  <div class="row">${acts(q)}</div></div>`}).join(''):emptyHtml(t('noQueue','لا يوجد مرضى في الطابور اليوم'),t('checkinHint','يظهر المريض هنا تلقائيًا عند حجز كشف اليوم أو تسجيل وصوله'))}</div>`)};
+VIEWS['doctor/consult']=async({u,segs})=>{const q=DB.get('queue_tickets',segs[2]);
+ if(!q)return shell(u,t('consult','الكشف'),emptyHtml(t('notFound','غير موجود')));
+ const p=DB.get('users',q.patientId);const appt=DB.get('appointments',q.appointmentId);
+ return shell(u,t('consult','الكشف'),`
+ <div class="row mb"><button class="btn ghost sm" data-act="goto" data-h="#/doctor/queue">${ic('back',16)} ${t('backQueue','عودة للطابور')}</button></div>
+ <div class="grid2">
+  <div class="card pad"><div class="row mb">${av(p)}<div><b>${esc(p?.name||'')}</b><br><small style="color:var(--muted)" dir="ltr">${esc(p?.phone||'')} ${p?.dob?'· '+p.dob:''}</small></div><div class="spacer"></div><span class="qnum">${q.number}</span></div>
+   ${p?.allergies?`<div class="bdg err mb">${ic('alert',13)} ${t('allergies','حساسية')}: ${esc(p.allergies)}</div>`:''}
+   ${p?.chronic?`<div class="bdg warn mb">${t('chronic','أمراض مزمنة')}: ${esc(p.chronic)}</div>`:''}
+   ${p?.medications?`<div class="bdg info mb">${t('curMeds','أدوية حالية')}: ${esc(p.medications)}</div>`:''}
+   <div class="mt"><a class="linkbtn" href="#/doctor/patients/${p?.id}">${t('fullFile','فتح الملف الكامل (الزيارات/الأمراض/التقارير)')} ←</a></div>
+   ${appt&&appt.paymentStatus!=='paid'?`<div class="mt"><button class="btn sm oks" data-act="apptPay" data-id="${appt.id}">${ic('cash',15)} ${t('markPaid','تسجيل الدفع')} (${money(appt.price)})</button></div>`:''}</div>
+  <div class="card pad"><form data-form="consult" data-ticket="${q.id}">
+   <div class="field"><label class="flabel">${t('cc','الشكوى الرئيسية')}</label><input class="inp" name="cc"></div>
+   <div class="field"><label class="flabel">${t('sym','الأعراض')}</label><textarea class="inp" name="sym"></textarea></div>
+   <label class="flabel">${t('vitals','العلامات الحيوية')}</label>
+   <div class="fgrid">
+    <div class="field"><input class="inp" name="bp" placeholder="${t('bp','ضغط الدم')}"></div>
+    <div class="field"><input class="inp" name="pu" placeholder="${t('pulse','النبض')}"></div>
+    <div class="field"><input class="inp" name="te" placeholder="${t('temp','الحرارة')}"></div>
+    <div class="field"><input class="inp" name="we" placeholder="${t('weight','الوزن')}"></div>
+   </div>
+   <div class="field"><label class="flabel">${t('exam','الفحص')}</label><textarea class="inp" name="ex"></textarea></div>
+   <div class="field"><label class="flabel">${t('diag','التشخيص')} *</label><input class="inp" name="dg" required></div>
+   <div class="field"><label class="flabel">${t('treat','العلاج')}</label><textarea class="inp" name="tr"></textarea></div>
+   <div class="field"><label class="flabel">${t('notes','ملاحظات طبية')}</label><textarea class="inp" name="nt"></textarea></div>
+   <div class="field"><label class="flabel">${t('follow','موعد المتابعة')}</label><input class="inp" type="date" name="fu" min="${todayStr()}"></div>
+   <div class="card pad" style="background:var(--teal-soft);box-shadow:none">
+    <b>${ic('pill',16)} ${t('rxInline','الروشتة (تتحول لصورة PNG للمريض)')}</b>
+    <div id="rxRows" class="mt"></div>
+    <button type="button" class="btn ghost sm" data-act="rxAddRow">${ic('plus',14)} ${t('addMed','إضافة دواء')}</button>
+    <div class="field mt"><label class="flabel">${t('rxNotes','ملاحظات على الروشتة')}</label><input class="inp" name="rxnotes"></div>
+   </div>
+   <button class="btn block mt" type="submit">${ic('check',17)} ${t('saveComplete','حفظ الكشف وإنهاء الزيارة')}</button>
+  </form></div></div>`)};
+VIEWS['doctor/patients']=async({u,segs})=>{
+ if(segs[2]){const p=DB.get('users',segs[2]);
+  if(!p||!DB.all('appointments').some(a=>a.patientId===p.id&&a.doctorId===u.id))return shell(u,t('patients','المرضى'),emptyHtml(t('notAllowed','غير مصرح')));
+  const visits=DB.all('visits').filter(v=>v.patientId===p.id).reverse();
+  const rxs=DB.all('prescriptions').filter(r=>r.patientId===p.id).reverse();
+  const files=DB.all('medical_files').filter(f=>f.patientId===p.id).reverse();
+  return shell(u,p.name,`
+  <div class="row mb"><button class="btn ghost sm" data-act="goto" data-h="#/doctor/patients">${ic('back',16)} ${t('back','رجوع')}</button>
+  <span class="chip">${t('visitsCount','مرات الكشف')}: <b>${visits.length}</b></span></div>
+  <div class="grid2">
+   <div class="card pad"><div class="row mb">${av(p)}<div><b>${esc(p.name)}</b><br><small style="color:var(--muted)">${esc(p.email||'')} · <span dir="ltr">${esc(p.phone||'')}</span></small></div></div>
+    <div class="row mb"><span class="chip">${p.gender==='f'?t('female','أنثى'):p.gender==='m'?t('male','ذكر'):'—'}</span>${p.dob?`<span class="chip">${ic('calendar',13)} ${esc(p.dob)}</span>`:''}</div>
+    <form data-form="medInfo"><input type="hidden" name="pid" value="${p.id}">
+     <div class="field"><label class="flabel">${t('allergies','الحساسية')}</label><input class="inp" name="allergies" value="${esc(p.allergies||'')}"></div>
+     <div class="field"><label class="flabel">${t('chronic','الأمراض المزمنة')}</label><input class="inp" name="chronic" value="${esc(p.chronic||'')}"></div>
+     <div class="field"><label class="flabel">${t('prevCond','حالات سابقة')}</label><textarea class="inp" name="conditions">${esc(p.conditions||'')}</textarea></div>
+     <div class="field"><label class="flabel">${t('curMeds','أدوية حالية')}</label><input class="inp" name="medications" value="${esc(p.medications||'')}"></div>
+     <div class="field"><label class="flabel">${t('medNotes','ملاحظات طبية')}</label><textarea class="inp" name="medicalNotes">${esc(p.medicalNotes||'')}</textarea></div>
+     <button class="btn sm" type="submit">${t('save','حفظ')}</button></form></div>
+   <div>
+    <div class="card pad mb"><b>${t('visits','سجل الزيارات والأيام')} (${visits.length})</b>
+     ${visits.length?visits.map(v=>`<div class="nitem"><b>${fmtD(v.date)}</b> — ${esc(v.diagnosis)}${v.treatment?`<br><small style="color:var(--muted)">${t('treat','العلاج')}: ${esc(v.treatment)}</small>`:''}${v.followUp?`<br><small>${t('follow','متابعة')}: ${fmtD(v.followUp)}</small>`:''}</div>`).join(''):emptyHtml(t('noVisits','لا زيارات بعد'))}</div>
+    <div class="card pad mb"><b>${t('prescriptions','الروشتات')} (${rxs.length})</b>
+     ${rxs.length?rxs.map(r=>`<div class="fileitem">${ic('pill',18)}<div style="flex:1">${fmtD(r.date)} — ${r.items.length} ${t('meds','أدوية')}</div><button class="btn sm ghost" data-act="rxView" data-id="${r.id}">${ic('eye',14)}</button></div>`).join(''):emptyHtml(t('noRx','لا روشتات'))}</div>
+    <div class="card pad"><b>${t('files','التحاليل والتقارير')} (${files.length})</b>
+     ${files.length?files.map(f=>`<div class="fileitem">${ic('doc',18)}<div style="flex:1;min-width:0"><b style="font-size:13px">${esc(f.name)}</b><br><small style="color:var(--muted)">${fmtD(f.createdAt)}</small></div><button class="btn sm ghost" data-act="fileView" data-id="${f.id}">${ic('eye',14)}</button></div>`).join(''):emptyHtml(t('noFiles','لا ملفات'))}</div>
+   </div></div>`)}
+ const pids=[...new Set(DB.all('appointments').filter(a=>a.doctorId===u.id).map(a=>a.patientId))];
+ return shell(u,t('patients','المرضى'),`
+ <div class="card pad mb"><div class="row"><b>${t('searchPat','بحث عن مريض')}</b><div class="spacer"></div>
+  <input class="inp" style="max-width:320px" placeholder="${t('searchByNamePhone','الاسم أو الهاتف...')}" data-change="searchPat"></div><div id="patResults"></div></div>
+ <div class="card">${pids.length?`<div class="twrap"><table class="tbl"><tr><th>${t('patient','المريض')}</th><th>${t('phone','الهاتف')}</th><th>${t('visits','الكشوفات')}</th><th></th></tr>
+ ${pids.map(id=>{const p=DB.get('users',id);if(!p)return'';const vc=DB.all('visits').filter(v=>v.patientId===id).length;
+  return`<tr><td class="row">${av(p)} ${esc(p.name)}</td><td dir="ltr">${esc(p.phone||'—')}</td><td>${vc}</td><td><a class="btn sm ghost" href="#/doctor/patients/${id}">${t('openFile','فتح الملف الكامل')}</a></td></tr>`}).join('')}</table></div>`:emptyHtml(t('noPats','لا يوجد مرضى بعد'),t('patsHint','يظهر هنا المرضى الذين لديهم مواعيد معك'))}</div>`)};
+VIEWS['doctor/appointments']=async({u,params})=>{const date=params.get('date')||todayStr();
+ const list=DB.all('appointments').filter(a=>a.doctorId===u.id&&a.date===date).sort((a,b)=>a.time.localeCompare(b.time));
+ return shell(u,t('appointments','المواعيد'),`
+ <div class="card pad mb"><div class="row"><input class="inp" type="date" value="${date}" style="max-width:200px" data-change="docDate">
+ <span class="chip">${t('total','الإجمالي')}: ${list.filter(a=>a.status!=='cancelled').length}</span></div></div>
+ <div class="card">${list.length?`<div class="twrap"><table class="tbl"><tr><th>${t('time','الوقت')}</th><th>${t('patient','المريض')}</th><th>${t('status','الحالة')}</th><th>${t('pay','الدفع')}</th><th>${t('actions','إجراءات')}</th></tr>
+ ${list.map(a=>`<tr><td><b dir="ltr">${a.time}</b></td><td>${esc(DB.get('users',a.patientId)?.name||'')}</td><td>${stB(stAppt,a.status)}</td><td>${payB(a)}</td>
+ <td class="row">${a.status==='booked'?`<button class="btn sm" data-act="apptCheckin" data-id="${a.id}">${t('checkin','تسجيل وصول')}</button>`:''}
+ ${a.paymentStatus!=='paid'&&a.status!=='cancelled'?`<button class="btn sm oks" data-act="apptPay" data-id="${a.id}">${ic('cash',14)} ${t('pay','دفع')}</button>`:''}</td></tr>`).join('')}</table></div>`:emptyHtml(t('noAppts','لا توجد مواعيد في هذا اليوم'))}</div>`)};
+VIEWS['doctor/prescriptions']=async({u,params})=>{
+ const pids=[...new Set(DB.all('appointments').filter(a=>a.doctorId===u.id).map(a=>a.patientId))];
+ const sel=params.get('patient')||'';
+ const mine=DB.all('prescriptions').filter(r=>r.doctorId===u.id).reverse();
+ return shell(u,t('prescriptions','الروشتات'),`
+ <div class="card pad mb"><b>${t('newRx','روشتة جديدة → تتحول لصورة PNG')}</b>
+  <form data-form="rxNew" class="mt">
+   <div class="field"><label class="flabel">${t('patient','المريض')}</label>
+    <select class="inp" name="patientId" required><option value="">— ${t('choose','اختر')} —</option>
+    ${pids.map(id=>{const p=DB.get('users',id);return p?`<option value="${id}" ${id===sel?'selected':''}>${esc(p.name)}</option>`:''}).join('')}</select></div>
+   <div class="field"><label class="flabel">${t('diag','التشخيص')}</label><input class="inp" name="diagnosis"></div>
+   <label class="flabel">${t('meds','الأدوية')}</label>
+   <div id="rxRows"></div>
+   <button type="button" class="btn ghost sm" data-act="rxAddRow">${ic('plus',14)} ${t('addMed','إضافة دواء')}</button>
+   <div class="field mt"><label class="flabel">${t('rxNotes','ملاحظات عامة')}</label><textarea class="inp" name="notes"></textarea></div>
+   <button class="btn" type="submit">${ic('pill',16)} ${t('genRx','حفظ وتوليد الروشتة PNG')}</button></form></div>
+ <div class="card">${mine.length?mine.map(r=>{const p=DB.get('users',r.patientId);return`<div class="fileitem">${ic('pill',18)}<div style="flex:1"><b>${esc(p?.name||'')}</b><br><small style="color:var(--muted)">${fmtD(r.date)} · ${r.items.length} ${t('meds','أدوية')}</small></div><button class="btn sm ghost" data-act="rxView" data-id="${r.id}">${ic('eye',14)} ${t('view','عرض')}</button></div>`}).join(''):emptyHtml(t('noRx','لا روشتات بعد'))}</div>`)};
+VIEWS['doctor/clinical']=async({u})=>{const patients=DB.all('users').filter(x=>x.role==='patient'&&x.active);const labs=DB.all('lab_orders').filter(x=>x.doctorId===u.id).slice().reverse();const radiology=DB.all('radiology_orders').filter(x=>x.doctorId===u.id).slice().reverse();const follow=DB.all('follow_ups').filter(x=>x.doctorId===u.id).slice().reverse();return shell(u,'التحاليل والأشعة والمتابعة',`
+ <div class="cards"><div class="card scard"><div class="ic">${ic('list',22)}</div><div><div class="val">${labs.length}</div><div class="lbl">طلبات التحاليل</div></div></div><div class="card scard"><div class="ic">${ic('doc',22)}</div><div><div class="val">${radiology.length}</div><div class="lbl">طلبات الأشعة</div></div></div><div class="card scard"><div class="ic">${ic('calendar',22)}</div><div><div class="val">${follow.length}</div><div class="lbl">المتابعات</div></div></div></div>
+ <div class="grid2 mt2">
+  <div class="card pad"><h3 class="mb">طلب تحليل</h3><form data-form="doctorLabOrder"><div class="field"><label class="flabel">المريض</label><select class="inp" name="patientId" required><option value="">اختر المريض</option>${patients.map(p=>`<option value="${p.id}">${esc(p.name)} — ${esc(p.phone||'')}</option>`).join('')}</select></div><div class="field"><label class="flabel">اسم التحليل</label><input class="inp" name="testName" required></div><div class="field"><label class="flabel">ملاحظات</label><textarea class="inp" name="notes"></textarea></div><button class="btn" type="submit">حفظ طلب التحليل</button></form></div>
+  <div class="card pad"><h3 class="mb">طلب أشعة</h3><form data-form="doctorRadiologyOrder"><div class="field"><label class="flabel">المريض</label><select class="inp" name="patientId" required><option value="">اختر المريض</option>${patients.map(p=>`<option value="${p.id}">${esc(p.name)} — ${esc(p.phone||'')}</option>`).join('')}</select></div><div class="field"><label class="flabel">نوع الأشعة</label><input class="inp" name="study" required></div><div class="field"><label class="flabel">سبب الطلب</label><textarea class="inp" name="indication"></textarea></div><button class="btn" type="submit">حفظ طلب الأشعة</button></form></div>
+ </div>
+ <div class="card pad mt2"><h3 class="mb">إضافة متابعة</h3><form data-form="doctorFollowUp" class="fgrid"><div class="field"><label class="flabel">المريض</label><select class="inp" name="patientId" required><option value="">اختر المريض</option>${patients.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div><div class="field"><label class="flabel">موعد المتابعة</label><input class="inp" type="date" name="dueDate" min="${todayStr()}" required></div><div class="field"><label class="flabel">السبب</label><input class="inp" name="reason"></div><div style="align-self:end"><button class="btn" type="submit">حفظ المتابعة</button></div></form></div>
+ <div class="grid2 mt2"><div class="card pad"><h3 class="mb">آخر طلبات التحاليل</h3>${labs.length?labs.slice(0,8).map(x=>`<div class="nitem"><b>${esc(DB.get('users',x.patientId)?.name||'—')}</b><br>${esc(x.testName||'')} <span class="bdg blue">${esc(x.status||'requested')}</span></div>`).join(''):emptyHtml('لا توجد طلبات تحاليل')}</div><div class="card pad"><h3 class="mb">آخر طلبات الأشعة والمتابعات</h3>${radiology.length||follow.length?[...radiology.slice(0,4).map(x=>`<div class="nitem"><b>أشعة:</b> ${esc(x.study||'')} — ${esc(DB.get('users',x.patientId)?.name||'—')}</div>`),...follow.slice(0,4).map(x=>`<div class="nitem"><b>متابعة:</b> ${esc(x.dueDate||'')} — ${esc(DB.get('users',x.patientId)?.name||'—')}</div>`)].join(''):emptyHtml('لا توجد طلبات أو متابعات')}</div></div>`)};
+VIEWS['doctor/settings']=async({u})=>shell(u,t('settings','الإعدادات'),`
+ <form data-form="docSet">
+ <div class="card pad mb"><b>${t('profile','الملف الشخصي')}</b>
+  <div class="fgrid mt">
+   <div class="field"><label class="flabel">${t('name','الاسم')}</label><input class="inp" name="name" value="${esc(u.name)}" required></div>
+   <div class="field"><label class="flabel">${t('phone','الهاتف')}</label><input class="inp" name="phone" value="${esc(u.phone||'')}" dir="ltr"></div>
+   <div class="field"><label class="flabel">${t('specialty','التخصص')}</label><input class="inp" name="specialty" value="${esc(u.specialty||'')}"></div>
+   <div class="field"><label class="flabel">${t('email','البريد')}</label><input class="inp" value="${esc(u.email)}" disabled></div>
+  </div></div>
+ <div class="card pad mb"><b>${t('bookingSet','إعدادات الحجز')}</b>
+  <div class="fgrid mt">
+   <div class="field"><label class="flabel">${t('price','سعر الكشف')} <small>(${t('emptyDefault','فارغ = الافتراضي')})</small></label><input class="inp" type="number" name="price" value="${u.price??''}"></div>
+   <div class="field"><label class="flabel">${t('dur','مدة الكشف (د)')}</label><input class="inp" type="number" name="duration" value="${u.duration??''}"></div>
+   <div class="field"><label class="flabel">${t('dailyLimit','الحد اليومي الافتراضي')}</label><input class="inp" type="number" name="dailyLimit" value="${u.dailyLimit??''}"></div>
+  </div>
+  <label class="switch mt"><input type="checkbox" name="bookingOpen" ${u.bookingOpen!==false?'checked':''}><span class="tr"></span>${t('allowBooking','السماح بالحجز لديّ')}</label>
+  <div class="mt"><button type="button" class="btn ghost sm" data-act="dayLimits">${ic('chart',15)} ${t('dayLimits','حدود الحجوزات باليوم والتاريخ')}</button></div></div>
+ <button class="btn" type="submit">${ic('check',16)} ${t('save','حفظ')}</button></form>${changePwCard()}`);
+VIEWS.reception=async({u})=>{const today=todayStr();
+ const appts=DB.all('appointments').filter(a=>a.date===today);
+ const docs=svc.activeDoctors();
+ const stats=[{i:'users',v:appts.filter(a=>a.status!=='cancelled').length,l:t('todayPats','مرضى اليوم')},{i:'clock',v:DB.all('queue_tickets').filter(q=>q.date===today&&q.status==='waiting').length,l:t('waiting','منتظرون')},{i:'check',v:appts.filter(a=>a.status==='completed').length,l:t('completed','كشوفات مكتملة')},{i:'cash',v:money(svc.revenue(today,today)),l:t('todayRev','إيراد اليوم')},{i:'alert',v:appts.filter(a=>a.paymentStatus!=='paid'&&a.status!=='cancelled').length,l:t('unpaid','غير مدفوع')}];
+ return shell(u,t('dashboard','لوحة الاستقبال'),`${statCards(stats)}
+ <div class="card pad mt2"><div class="row mb"><b>${t('docStatus','حالة الأطباء (تظهر للمرضى)')}</b></div>
+ ${docs.length?docs.map(d=>`<div class="qrow"><div class="qnum">${esc(d.name[0]||'؟')}</div><div style="flex:1"><b>${esc(d.name)}</b><br><small style="color:var(--muted)">${esc(d.specialty||'')}</small></div>${d.isWorking?`<span class="bdg ok">${t('working','يعمل')}</span>`:`<span class="bdg mut">${t('notWorking','غير موجود')}</span>`}</div>`).join(''):emptyHtml(t('noDocs','لا يوجد أطباء'),t('adminAdds','يقوم المسؤول بإضافة الأطباء'))}</div>
+ <div class="card mt2"><div class="row pad" style="padding-bottom:0"><b>${t('todayAppts','مواعيد اليوم')}</b><div class="spacer"></div><a class="btn sm" href="#/reception/new">${ic('plus',14)} ${t('newAppt','حجز جديد')}</a></div>
+ ${appts.length?`<div class="twrap"><table class="tbl"><tr><th>${t('time','الوقت')}</th><th>${t('patient','المريض')}</th><th>${t('doctor','الطبيب')}</th><th>${t('status','الحالة')}</th><th>${t('pay','الدفع')}</th><th>${t('actions','إجراءات')}</th></tr>
+ ${appts.sort((a,b)=>a.time.localeCompare(b.time)).map(a=>`<tr><td><b dir="ltr">${a.time}</b></td><td>${esc(DB.get('users',a.patientId)?.name||'')}</td><td>${esc(DB.get('users',a.doctorId)?.name||'')}</td><td>${stB(stAppt,a.status)}</td><td>${payB(a)}</td>
+ <td class="row">${a.status==='booked'?`<button class="btn sm" data-act="apptCheckin" data-id="${a.id}">${t('checkin','وصول')}</button>`:''}
+ ${a.paymentStatus!=='paid'&&a.status!=='cancelled'?`<button class="btn sm oks" data-act="apptPay" data-id="${a.id}">${t('pay','دفع')}</button>`:''}
+ ${['booked','checked_in'].includes(a.status)?`<button class="btn sm ghost" data-act="apptCancel" data-id="${a.id}">${ic('x',13)}</button>`:''}</td></tr>`).join('')}</table></div>`:emptyHtml(t('noApptsToday','لا توجد مواعيد اليوم'))}</div>`)};
+VIEWS['reception/appointments']=async({u,params})=>{const date=params.get('date')||todayStr();
+ const list=DB.all('appointments').filter(a=>a.date===date).sort((a,b)=>a.time.localeCompare(b.time));
+ return shell(u,t('appointments','المواعيد'),`
+ <div class="card pad mb"><div class="row"><input class="inp" type="date" value="${date}" style="max-width:200px" data-change="recDate">
+ <a class="btn sm" href="#/reception/new">${ic('plus',14)} ${t('newAppt','حجز جديد')}</a></div></div>
+ <div class="card">${list.length?`<div class="twrap"><table class="tbl"><tr><th>${t('time','الوقت')}</th><th>${t('patient','المريض')}</th><th>${t('doctor','الطبيب')}</th><th>${t('status','الحالة')}</th><th>${t('pay','الدفع')}</th><th>${t('actions','إجراءات')}</th></tr>
+ ${list.map(a=>`<tr><td><b dir="ltr">${a.time}</b></td><td>${esc(DB.get('users',a.patientId)?.name||'')}</td><td>${esc(DB.get('users',a.doctorId)?.name||'')}</td><td>${stB(stAppt,a.status)}</td><td>${payB(a)}</td>
+ <td class="row">${a.status==='booked'?`<button class="btn sm" data-act="apptCheckin" data-id="${a.id}">${t('checkin','وصول')}</button>`:''}
+ ${a.paymentStatus!=='paid'&&a.status!=='cancelled'?`<button class="btn sm oks" data-act="apptPay" data-id="${a.id}">${t('pay','دفع')}</button>`:''}
+ ${['booked','checked_in'].includes(a.status)?`<button class="btn sm ghost" data-act="apptCancel" data-id="${a.id}">${t('cancel','إلغاء')}</button>`:''}</td></tr>`).join('')}</table></div>`:emptyHtml(t('noAppts','لا توجد مواعيد'))}</div>`)};
+VIEWS['reception/new']=async({u})=>shell(u,t('newAppt','إضافة كشف'),`
+ <div class="card pad"><b>${t('step1','1) اختيار المريض')}</b>
+  <form data-form="recBook" class="mt"><input type="hidden" name="patientId" id="recPid">
+   <div class="row"><input class="inp" style="flex:1;min-width:220px" placeholder="${t('searchByNamePhone','ابحث بالاسم أو الهاتف...')}" data-change="searchPat">
+   <button type="button" class="btn ghost sm" data-act="quickPat">${ic('plus',14)} ${t('quickAddPat','إضافة مريض سريع')}</button></div>
+   <div id="patResults"></div><div id="recPatChip"></div>
+   <div class="fgrid mt">
+    <div class="field"><label class="flabel">${t('doctor','الطبيب')}</label>
+     <select class="inp" name="doctorId" data-change="slots" required><option value="">—</option>
+     ${svc.activeDoctors().map(d=>`<option value="${d.id}">${esc(d.name)} (${esc(d.specialty||'')})</option>`).join('')}</select></div>
+    <div class="field"><label class="flabel">${t('date','التاريخ')}</label><input class="inp" type="date" name="date" value="${todayStr()}" min="${todayStr()}" data-change="slots" required></div>
+   </div>
+   ${slotsBoxHTML()}
+   <button class="btn" type="submit">${ic('check',16)} ${t('confirmBook','تأكيد الحجز')}</button></form></div>`);
+VIEWS['reception/patients']=async({u})=>{const pats=DB.all('users').filter(x=>x.role==='patient');
+ return shell(u,t('patients','المرضى'),`
+ <div class="card pad mb"><input class="inp" placeholder="${t('searchByNamePhone','الاسم أو الهاتف...')}" data-change="searchPat"><div id="patResults"></div></div>
+ <div class="card">${pats.length?`<div class="twrap"><table class="tbl"><tr><th>${t('name','الاسم')}</th><th>${t('phone','الهاتف')}</th><th>${t('email','البريد')}</th><th>${t('visits','الزيارات')}</th></tr>
+ ${pats.map(p=>`<tr><td class="row">${av(p)} ${esc(p.name)}</td><td dir="ltr">${esc(p.phone||'—')}</td><td dir="ltr">${esc(p.email||'—')}</td><td>${DB.all('appointments').filter(a=>a.patientId===p.id&&a.status==='completed').length}</td></tr>`).join('')}</table></div>`:emptyHtml(t('noPats','لا يوجد مرضى مسجلون بعد'))}</div>`)};
+VIEWS['reception/queue']=async({u})=>{const docs=svc.activeDoctors();
+ return shell(u,t('queue','الطابور'),docs.length?docs.map(d=>{const tix=svc.tickets(d.id);
+  return`<div class="card pad mb"><div class="row mb"><b>${esc(d.name)}</b>${d.isWorking?`<span class="bdg ok">${t('working','يعمل')}</span>`:`<span class="bdg mut">${t('notWorking','غير موجود')}</span>`}<div class="spacer"></div><span class="chip">${t('curNum','الدور الحالي')}: <b>${svc.currentNumber(d.id)||'—'}</b></span></div>
+  ${tix.length?`<div class="twrap"><table class="tbl"><tr><th>#</th><th>${t('patient','المريض')}</th><th>${t('status','الحالة')}</th></tr>
+  ${tix.map(q=>`<tr><td><b>${q.number}</b></td><td>${esc(DB.get('users',q.patientId)?.name||'')}</td><td>${stB(stTick,q.status)}</td></tr>`).join('')}</table></div>`:`<div class="hint">${t('noQueueDoc','لا طابور لهذا الطبيب اليوم')}</div>`}</div>`}).join(''):emptyHtml(t('noDocs','لا يوجد أطباء')))};
+VIEWS['reception/payments']=async({u})=>{const pays=DB.all('payments').slice().reverse();const today=todayStr(),month=today.slice(0,7);
+ return shell(u,t('payments','المدفوعات والفواتير'),`
+ ${statCards([{i:'cash',v:money(svc.revenue(today,today)),l:t('todayRev','إيراد اليوم')},{i:'chart',v:money(svc.revenue(month+'-01',today)),l:t('monthRev','إيراد الشهر')},{i:'doc',v:pays.length,l:t('invoices','الفواتير')}])}
+ <div class="card mt2">${pays.length?`<div class="twrap"><table class="tbl"><tr><th>${t('date','التاريخ')}</th><th>${t('patient','المريض')}</th><th>${t('doctor','الطبيب')}</th><th>${t('amount','المبلغ')}</th><th>${t('method','الطريقة')}</th><th>${t('by','بواسطة')}</th><th>${t('status','الحالة')}</th></tr>
+ ${pays.map(p=>`<tr><td>${fmtD(p.date)}</td><td>${esc(DB.get('users',p.patientId)?.name||'')}</td><td>${esc(DB.get('users',p.doctorId)?.name||'')}</td><td><b>${money(p.amount)}</b></td><td>${p.method==='card'?t('card','بطاقة'):t('cashM','نقدي')}</td><td>${esc(DB.get('users',p.createdBy)?.name||'—')}</td><td><span class="bdg ok">${t('paid','مدفوع')}</span></td></tr>`).join('')}</table></div>`:emptyHtml(t('noPays','لا توجد مدفوعات بعد'))}</div>`)};
+VIEWS['reception/chat']=async({u,segs})=>shell(u,t('chat','خدمة العملاء'),chatView(u,segs[2]));
+VIEWS['reception/settings']=async({u})=>shell(u,t('settings','الإعدادات'),`
+ <form data-form="staffProfile" class="card pad mb"><b>${t('profile','الملف الشخصي')}</b>
+  <div class="fgrid mt">
+   <div class="field"><label class="flabel">${t('name','الاسم')}</label><input class="inp" name="name" value="${esc(u.name)}" required></div>
+   <div class="field"><label class="flabel">${t('phone','الهاتف')}</label><input class="inp" name="phone" value="${esc(u.phone||'')}" dir="ltr"></div>
+   <div class="field"><label class="flabel">${t('email','البريد')}</label><input class="inp" value="${esc(u.email)}" disabled></div>
+  </div><button class="btn" type="submit">${t('save','حفظ')}</button></form>${changePwCard()}`);
+VIEWS.manager=async({u})=>{const us=DB.all('users'),today=todayStr(),month=today.slice(0,7);const ap=DB.all('appointments');
+ const stats=[{i:'users',v:us.filter(x=>x.role==='patient').length,l:t('patients','المرضى')},{i:'steth',v:us.filter(x=>x.role==='doctor').length,l:t('doctors','الأطباء')},{i:'phone',v:us.filter(x=>x.role==='receptionist').length,l:t('receptionists','الاستقبال')},{i:'calendar',v:ap.length,l:t('totalAppts','إجمالي المواعيد')},{i:'check',v:ap.filter(a=>a.status==='completed').length,l:t('completed','مكتملة')},{i:'x',v:ap.filter(a=>['cancelled','skipped'].includes(a.status)).length,l:t('cancelNoShow','ملغاة / غياب')},{i:'cash',v:money(svc.revenue(today,today)),l:t('todayRev','إيراد اليوم')},{i:'chart',v:money(svc.revenue(month+'-01',today)),l:t('monthRev','إيراد الشهر')}];
+ const docs=svc.activeDoctors();
+ return shell(u,t('dashboard','لوحة مدير العيادة'),`${statCards(stats)}
+ <div class="card mt2 pad"><b>${t('queueNow','الطابور الآن')}</b>
+ ${docs.length?docs.map(d=>`<div class="qrow"><div class="qnum">${esc(d.name[0])}</div><div style="flex:1"><b>${esc(d.name)}</b><br>${d.isWorking?`<span class="bdg ok">${t('working','يعمل')}</span>`:`<span class="bdg mut">${t('notWorking','غير موجود')}</span>`}</div>
+ <span class="chip">${t('waiting','انتظار')}: ${svc.tickets(d.id).filter(q=>q.status==='waiting').length}</span>
+ <span class="chip">${t('curNum','الحالي')}: ${svc.currentNumber(d.id)||'—'}</span></div>`).join(''):emptyHtml(t('noDocs','لا يوجد أطباء'))}</div>`)};
+VIEWS.patient=async({u})=>{const d=svc.myDoctor(u);const tk=svc.myTicket(u);
+ const todayAppt=DB.all('appointments').find(a=>a.patientId===u.id&&a.date===todayStr()&&a.status!=='cancelled');
+ const open=svc.clinicOpenNow();
+ return shell(u,`${t('welcome','مرحبًا')}، ${esc(u.name.split(' ')[0])} 👋`,`
+ ${tk?`<div class="card pad mb" style="border:2px solid var(--teal)">
+  <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:14px">
+   <div><div class="flabel">${t('yourNum','رقمي')}</div><div style="font-size:44px;font-weight:900;color:var(--acc);line-height:1">${tk.number}</div></div>
+   <div><div class="flabel">${t('curNum','الدور الحالي')}</div><div style="font-size:28px;font-weight:900">${svc.currentNumber(tk.doctorId)||'—'}</div></div>
+   <div><div class="flabel">${t('ahead','أمامي')}</div><div style="font-size:28px;font-weight:900">${svc.ahead(tk)}</div></div>
+   <div><div class="flabel">${t('estWait','الانتظار المتوقع')}</div><div style="font-size:22px;font-weight:900">~${svc.estWait(tk)} ${t('min','د')}</div></div>
+  </div><div class="mt">${stB(stTick,tk.status)} <a class="linkbtn" href="#/patient/queue">${t('followQueue','متابعة الطابور لحظيًا')} ←</a></div></div>`:''}
+ ${todayAppt&&!tk?`<div class="card pad mb"><div class="row"><div style="flex:1"><b>${t('todayAppt','موعد اليوم')}</b><br><small style="color:var(--muted)">${esc(DB.get('users',todayAppt.doctorId)?.name||'')} — <b dir="ltr">${todayAppt.time}</b></small></div>${stB(stAppt,todayAppt.status)} ${payB(todayAppt)}
+  ${todayAppt.status==='booked'?`<button class="btn sm" data-act="patSelfCheckin" data-id="${todayAppt.id}">${t('selfCheckin','تسجيل وصولي الآن')}</button>`:''}</div></div>`:''}
+ ${statCards([
+  {i:open?'check':'x',v:open?t('openNow','مفتوحة'):t('closedNow','مغلقة'),l:t('clinicStatus','حالة العيادة')},
+  {i:'user',v:d?esc(d.name):'—',l:t('doctor','الطبيب')},
+  {i:'cash',v:d?money(svc.effPrice(d)):'—',l:t('price','سعر الكشف')},
+  {i:'calendar',v:DB.all('appointments').filter(a=>a.patientId===u.id&&a.status!=='cancelled').length,l:t('myApptsCount','مواعيدي')},
+  {i:'bell',v:notifUnread(u.id),l:t('notifications','الإشعارات')}])}
+ <div class="grid2 mt2">
+  <button class="btn" style="min-height:64px;font-size:16px" data-act="goto" data-h="#/patient/book">${ic('plus',20)} ${t('bookNow','احجز كشفًا الآن')}</button>
+  <button class="btn ghost" style="min-height:64px;font-size:16px" data-act="goto" data-h="#/patient/chat">${ic('chat',20)} ${t('csBtn','خدمة العملاء')}</button>
+ </div>`)};
+VIEWS['patient/book']=async({u,params})=>{const docs=svc.activeDoctors();
+ return shell(u,t('book','حجز كشف'),`<div class="card pad">
+ ${docs.length?`<form data-form="book">
+  <div class="field"><label class="flabel">${t('doctor','الطبيب')}</label>
+   <select class="inp" name="doctorId" data-change="slots" required><option value="">— ${t('choose','اختر الطبيب')} —</option>
+   ${docs.map(d=>`<option value="${d.id}" ${d.id===params.get('doctor')?'selected':''}>${esc(d.name)} — ${esc(d.specialty||'')} (${money(svc.effPrice(d))})</option>`).join('')}</select></div>
+  <div class="field"><label class="flabel">${t('date','التاريخ')}</label><input class="inp" type="date" name="date" min="${todayStr()}" value="${todayStr()}" data-change="slots" required></div>
+  ${slotsBoxHTML()}
+  <button class="btn block" type="submit">${ic('check',18)} ${t('confirmBook','تأكيد الحجز')}</button></form>`
+ :emptyHtml(t('noDocs','لا يوجد أطباء متاحون حاليًا'),t('tryLater','يرجى المحاولة لاحقًا'))}</div>`)};
+VIEWS['patient/appointments']=async({u})=>{const mine=DB.all('appointments').filter(a=>a.patientId===u.id).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+ return shell(u,t('myappts','مواعيدي'),`
+ <div class="mb"><button class="btn" data-act="goto" data-h="#/patient/book">${ic('plus',16)} ${t('bookNow','احجز كشفًا')}</button></div>
+ <div class="card">${mine.length?mine.map(a=>{const d=DB.get('users',a.doctorId);return`<div class="qrow">
+  <div class="qnum">${ic('calendar',19)}</div>
+  <div style="flex:1;min-width:0"><b>${esc(d?.name||'')}</b><br><small style="color:var(--muted)">${fmtD(a.date)} — <b dir="ltr">${a.time}</b></small><br><span class="row">${stB(stAppt,a.status)} ${payB(a)}</span></div>
+  <div class="row">${a.status==='booked'?`<button class="btn sm ghost" data-act="apptCancel" data-id="${a.id}">${t('cancel','إلغاء')}</button>`:''}</div></div>`}).join(''):emptyHtml(t('noAppts','لا توجد مواعيد'),t('bookFirst','احجز أول كشف لك من زر الحجز'))}</div>`)};
+VIEWS['patient/queue']=async({u})=>{const tk=svc.myTicket(u);
+ if(!tk)return shell(u,t('queue','الطابور'),`<div class="card">${emptyHtml(t('noTicket','ليس لديك دور اليوم'),t('checkinHint2','عند حجز كشف اليوم يظهر رقمك هنا فورًا'))}</div>`);
+ const d=DB.get('users',tk.doctorId);
+ return shell(u,t('queue','الطابور'),`
+ <div class="card pad" style="text-align:center"><div class="flabel">${t('yourNum','رقمي في الطابور')}</div>
+  <div style="font-size:74px;font-weight:900;color:var(--acc);line-height:1.1">${tk.number}</div>
+  <div class="mt">${stB(stTick,tk.status)} <span class="chip">${esc(d?.name||'')}</span> ${d?.isWorking?`<span class="bdg ok">${t('working','الطبيب يعمل')}</span>`:`<span class="bdg mut">${t('notWorking','الطبيب غير موجود')}</span>`}</div></div>
+ <div class="cards mt">
+  <div class="card qbig"><div class="lbl">${t('curNum','الدور الحالي')}</div><div class="n">${svc.currentNumber(tk.doctorId)||'—'}</div></div>
+  <div class="card qbig"><div class="lbl">${t('ahead','أمامي')}</div><div class="n">${svc.ahead(tk)}</div></div>
+  <div class="card qbig"><div class="lbl">${t('estWait','الانتظار المتوقع')}</div><div class="n" style="font-size:30px">~${svc.estWait(tk)} ${t('min','د')}</div></div>
+ </div><div class="hint mt" style="text-align:center">${t('autoUpdate','يتم التحديث تلقائيًا بدون إعادة تحميل')}</div>`)};
+VIEWS['patient/file']=async({u})=>{const visits=DB.all('visits').filter(v=>v.patientId===u.id).reverse();
+ return shell(u,t('myfile','ملفي الطبي'),`<div class="grid2">
+ <div class="card pad"><b>${t('medInfo','البيانات الطبية')}</b>
+  <form data-form="medInfo" class="mt"><input type="hidden" name="pid" value="${u.id}">
+   <div class="field"><label class="flabel">${t('allergies','الحساسية')}</label><input class="inp" name="allergies" value="${esc(u.allergies||'')}"></div>
+   <div class="field"><label class="flabel">${t('chronic','أمراض مزمنة')}</label><input class="inp" name="chronic" value="${esc(u.chronic||'')}"></div>
+   <div class="field"><label class="flabel">${t('curMeds','أدوية أتناولها حاليًا')}</label><input class="inp" name="medications" value="${esc(u.medications||'')}"></div>
+   <button class="btn sm" type="submit">${t('save','حفظ')}</button></form></div>
+ <div class="card pad"><b>${t('visitHist','سجل الزيارات')} (${visits.length})</b>
+  ${visits.length?visits.map(v=>{const d=DB.get('users',v.doctorId);return`<div class="nitem"><b>${fmtD(v.date)}</b> — ${esc(d?.name||'')}<br><span class="bdg blue">${t('diag','التشخيص')}: ${esc(v.diagnosis)}</span>${v.treatment?`<br><small style="color:var(--muted)">${t('treat','العلاج')}: ${esc(v.treatment)}</small>`:''}${v.followUp?`<br><small>${t('follow','متابعة')}: ${fmtD(v.followUp)}</small>`:''}</div>`}).join(''):emptyHtml(t('noVisits','لا زيارات بعد'))}</div></div>`)};
+VIEWS['patient/prescriptions']=async({u})=>{const mine=DB.all('prescriptions').filter(r=>r.patientId===u.id).reverse();
+ return shell(u,t('prescriptions','الروشتات'),`<div class="card">
+ ${mine.length?mine.map(r=>{const d=DB.get('users',r.doctorId);return`<div class="fileitem">${ic('pill',20)}<div style="flex:1"><b>${fmtD(r.date)}</b><br><small style="color:var(--muted)">${esc(d?.name||'')} · ${r.items.length} ${t('meds','أدوية')}</small></div>
+ <button class="btn sm" data-act="rxView" data-id="${r.id}">${ic('eye',14)} ${t('view','عرض كصورة')}</button></div>`}).join(''):emptyHtml(t('noRx','لا روشتات بعد'),t('rxHint','عند إنشاء الطبيب روشتة ستجدها هنا كصورة قابلة للتحميل'))}</div>`)};
+VIEWS['patient/files']=async({u})=>{const mine=DB.all('medical_files').filter(f=>f.patientId===u.id).reverse();
+ return shell(u,t('files','التحاليل والملفات'),`
+ <div class="card pad mb"><form data-form="fileUp">
+  <div class="fgrid">
+   <div class="field"><label class="flabel">${t('kind','نوع الملف')}</label>
+    <select class="inp" name="kind"><option value="analysis">${t('analysis','تحليل')}</option><option value="xray">${t('xray','أشعة')}</option><option value="report">${t('report','تقرير')}</option><option value="image">${t('image','صورة')}</option><option value="pdf">PDF</option></select></div>
+   <div class="field"><label class="flabel">${t('fileName','اسم الملف')}</label><input class="inp" name="name" placeholder="${t('opt','اختياري')}"></div></div>
+  <div class="field"><label class="flabel">${t('pickFile','اختيار الملف')} <small>(${t('maxSize','صورة أو PDF بحد أقصى 1.5MB')})</small></label><input class="inp" type="file" name="file" accept="image/*,application/pdf" required></div>
+  <button class="btn" type="submit">${ic('upload',16)} ${t('upload','رفع')}</button></form></div>
+ <div class="card">${mine.length?mine.map(f=>`<div class="fileitem">${ic('doc',19)}<div style="flex:1;min-width:0"><b>${esc(f.name)}</b><br><small style="color:var(--muted)">${fmtD(f.createdAt)}</small></div>
+ <button class="btn sm ghost" data-act="fileView" data-id="${f.id}">${ic('eye',14)}</button><a class="btn sm ghost" href="${f.dataUrl}" download="${esc(f.fileName||f.name)}">${ic('download',14)}</a></div>`).join(''):emptyHtml(t('noFiles','لا ملفات بعد'))}</div>`)};
+VIEWS['patient/notifications']=async({u})=>{const mine=DB.all('notifications').filter(n=>n.userId===u.id).reverse();
+ mine.forEach(n=>{if(!n.read)DB.update('notifications',n.id,{read:true})});
+ return shell(u,t('notifications','الإشعارات'),`<div class="card">
+ ${mine.length?mine.map(n=>{const m=NTYPES[n.type]||['bell','var(--primary-soft)','var(--acc)'];return`<div class="nitem"><span class="nic" style="background:${m[1]};color:${m[2]}">${ic(m[0],16)}</span><div>${esc(n.body)}<time>${fmtD(n.createdAt)} ${fmtT(n.createdAt)}</time></div></div>`}).join(''):emptyHtml(t('noNotif','لا توجد إشعارات'))}</div>`)};
+VIEWS['patient/chat']=async({u})=>{svc.markChatRead(u.id,'patient');return shell(u,t('chat','خدمة العملاء'),chatView(u,u.id))};
+VIEWS['patient/settings']=async({u})=>shell(u,t('settings','الإعدادات'),`
+ <form data-form="patSet" class="card pad mb"><b>${t('profile','الملف الشخصي')}</b>
+  <div class="fgrid mt">
+   <div class="field"><label class="flabel">${t('name','الاسم')}</label><input class="inp" name="name" value="${esc(u.name)}" required></div>
+   <div class="field"><label class="flabel">${t('phone','الهاتف')}</label><input class="inp" name="phone" value="${esc(u.phone||'')}" dir="ltr"></div>
+   <div class="field"><label class="flabel">${t('email','البريد')}</label><input class="inp" type="email" name="email" value="${esc(u.email||'')}"></div>
+   <div class="field"><label class="flabel">${t('dob','تاريخ الميلاد')}</label><input class="inp" type="date" name="dob" value="${esc(u.dob||'')}"></div>
+   <div class="field"><label class="flabel">${t('gender','النوع')}</label><select class="inp" name="gender"><option value="">—</option><option value="m" ${u.gender==='m'?'selected':''}>${t('male','ذكر')}</option><option value="f" ${u.gender==='f'?'selected':''}>${t('female','أنثى')}</option></select></div>
+   <div class="field"><label class="flabel">${t('address','العنوان')}</label><input class="inp" name="address" value="${esc(u.address||'')}"></div>
+   <div class="field"><label class="flabel">${t('emgContact','جهة اتصال للطوارئ')}</label><input class="inp" name="emergencyContact" value="${esc(u.emergencyContact||'')}"></div>
+  </div><button class="btn" type="submit">${t('save','حفظ')}</button></form>${changePwCard()}`);
+const A={},F={},C={};let CHAT_PENDING=null,LOGO_PENDING=null;
+A.goto=ds=>{location.hash=ds.h};
+A.theme=()=>{ui.theme=ui.theme==='dark'?'light':'dark';localStorage.setItem('ey_theme',ui.theme);applyTheme();render()};
+A.lang=()=>{LANG=LANG==='ar'?'en':'ar';localStorage.setItem('ey_lang',LANG);applyLang();render()};
+A.menu=()=>{const s=$('#side'),o=$('#ovl');if(s){s.classList.toggle('open');o?.classList.toggle('show')}};
+A.collapse=()=>{ui.sideMini=!ui.sideMini;$('#side')?.classList.toggle('mini')};
+A.drop=ds=>{const d=$(ds.dropTarget);if(d)d.classList.toggle('open')};
+A.eye=(ds,el)=>{const inp=el.parentElement.querySelector('input');const show=inp.type==='password';inp.type=show?'text':'password';el.innerHTML=ic(show?'eyeoff':'eye')};
+A.logout=()=>{const u=Auth.user();if(u)audit(u.id,u.role,'LOGOUT','');Auth.clear();location.hash='#/';render();toast(t('loggedOut','تم تسجيل الخروج'),'info')};
+A.readAll=()=>{const u=Auth.user();DB.all('notifications').filter(n=>n.userId===u.id&&!n.read).forEach(n=>DB.update('notifications',n.id,{read:true}));render()};
+A.showAdminLogin=()=>{$('#loginStaff').style.display='none';$('#loginAdmin').style.display='block'};
+A.showStaffLogin=()=>{$('#loginAdmin').style.display='none';$('#loginStaff').style.display='block'};
+A.mBg=(ds,el,e)=>{if(e.target===el)closeModal()};
+A.closeModal=()=>closeModal();
+F.login=async fd=>{const u=DB.all('users').find(x=>(x.email||'').toLowerCase()===(fd.get('email')||'').trim().toLowerCase()&&x.role!=='admin');
+ if(!u)throw Err(t('noAccount','لا يوجد حساب بهذا البريد'));
+ if(!u.active)throw Err(t('disabledAcc','هذا الحساب معطل — راجع الإدارة'));
+ if(await hashPw(fd.get('password'),u.salt)!==u.hash)throw Err(t('wrongPass','كلمة المرور غير صحيحة'));
+ Auth.set(u);audit(u.id,u.role,'LOGIN','');location.hash=homeOf(u.role)};
+F.loginAdmin=async fd=>{const a=DB.all('users').find(x=>x.role==='admin');if(!a)throw Err(t('noAdmin','لم يتم إعداد النظام بعد'));
+ if(await hashPw(fd.get('adminpw'),a.salt)!==a.hash)throw Err(t('wrongPass','كلمة المرور غير صحيحة'));
+ Auth.set(a);audit(a.id,'admin','LOGIN','');location.hash='#/admin'};
+F.register=async fd=>{const name=(fd.get('name')||'').trim(),email=(fd.get('email')||'').trim().toLowerCase(),phone=(fd.get('phone')||'').trim(),dob=fd.get('dob')||'',gender=fd.get('gender')||'';
+ if(!name)throw Err(t('nameReq','الاسم مطلوب'));
+ if(!email&&!phone)throw Err(t('emailOrPhone','أدخل البريد أو الهاتف — أحدهما على الأقل'));
+ if(email&&DB.all('users').some(x=>(x.email||'').toLowerCase()===email))throw Err(t('emailUsed','البريد مستخدم بالفعل'));
+ if(phone&&DB.all('users').some(x=>x.phone===phone))throw Err(t('phoneUsed','الهاتف مستخدم بالفعل'));
+ const pw=fd.get('password');if(pw!==fd.get('password2'))throw Err(t('pwMismatch','كلمتا المرور غير متطابقتين'));
+ checkPwPolicy(pw);const salt=uid();
+ const u=DB.insert('users',{role:'patient',name,email,phone,dob,gender,salt,hash:await hashPw(pw,salt),active:true});
+ audit(u.id,'patient','PATIENT_CREATED','');Auth.set(u);toast(t('welcomeMsg','مرحبًا بك في عيادتي 🎉'));location.hash='#/patient'};
+F.changePw=async fd=>{const u=Auth.user();if(fd.get('nw')!==fd.get('cf'))throw Err(t('pwMismatch','كلمتا المرور غير متطابقتين'));
+ await svc.changePassword(u.id,fd.get('cur'),fd.get('nw'));toast(t('pwChanged','تم تغيير كلمة المرور'));render()};
+F.accCreate=async fd=>{const role=fd.get('role'),email=(fd.get('email')||'').trim().toLowerCase();
+ if(DB.all('users').some(x=>(x.email||'').toLowerCase()===email))throw Err(t('emailUsed','البريد مستخدم بالفعل'));
+ checkPwPolicy(fd.get('password'));const salt=uid();
+ DB.insert('users',{role,name:fd.get('name').trim(),email,phone:(fd.get('phone')||'').trim(),specialty:role==='doctor'?(fd.get('specialty')||'').trim():'',salt,hash:await hashPw(fd.get('password'),salt),active:true});
+ audit(Auth.user()?.id,'admin','ACCOUNT_CREATED',role);toast(t('accCreated','تم إنشاء الحساب'));render()};
+F.doctorLabOrder=async fd=>{const u=Auth.user();const patientId=fd.get('patientId');DB.insert('lab_orders',{patientId,doctorId:u.id,testName:(fd.get('testName')||'').trim(),notes:(fd.get('notes')||'').trim(),status:'requested',createdAt:new Date().toISOString()});audit(u.id,u.role,'LAB_ORDER_CREATED',patientId);toast('تم حفظ طلب التحليل');render()};
+F.doctorRadiologyOrder=async fd=>{const u=Auth.user();const patientId=fd.get('patientId');DB.insert('radiology_orders',{patientId,doctorId:u.id,study:(fd.get('study')||'').trim(),indication:(fd.get('indication')||'').trim(),status:'requested',createdAt:new Date().toISOString()});audit(u.id,u.role,'RADIOLOGY_ORDER_CREATED',patientId);toast('تم حفظ طلب الأشعة');render()};
+F.doctorFollowUp=async fd=>{const u=Auth.user();const patientId=fd.get('patientId');DB.insert('follow_ups',{patientId,doctorId:u.id,dueDate:fd.get('dueDate'),reason:(fd.get('reason')||'').trim(),status:'pending',createdAt:new Date().toISOString()});audit(u.id,u.role,'FOLLOW_UP_CREATED',patientId);toast('تم حفظ المتابعة');render()};
+F.moduleBranch=async fd=>{const name=(fd.get('name')||'').trim();if(!name)throw Err('اسم الفرع مطلوب');DB.insert('branches',{name,address:(fd.get('address')||'').trim(),phone:(fd.get('phone')||'').trim(),active:true});audit(Auth.user()?.id,'admin','BRANCH_CREATED',name);toast('تم حفظ الفرع');render()};
+F.moduleService=async fd=>{const name=(fd.get('name')||'').trim();if(!name)throw Err('اسم الخدمة مطلوب');DB.insert('services',{name,price:+fd.get('price')||0,duration:+fd.get('duration')||15,active:true});audit(Auth.user()?.id,'admin','SERVICE_CREATED',name);toast('تم حفظ الخدمة');render()};
+A.accEdit=ds=>{const x=DB.get('users',ds.id);if(!x)return;
+ openModal(`<h3 class="mb">${ic('edit',18)} ${t('editAcc','تعديل الحساب')}</h3>
+ <form data-form="accEditF"><input type="hidden" name="uid" value="${x.id}">
+ <div class="field"><label class="flabel">${t('name','الاسم')}</label><input class="inp" name="name" value="${esc(x.name)}" required></div>
+ <div class="field"><label class="flabel">${t('phone','الهاتف')}</label><input class="inp" name="phone" value="${esc(x.phone||'')}" dir="ltr"></div>
+ ${x.role==='doctor'?`<div class="field"><label class="flabel">${t('specialty','التخصص')}</label><input class="inp" name="specialty" value="${esc(x.specialty||'')}"></div>`:''}
+ <div class="mrow"><button type="button" class="btn ghost" data-act="closeModal">${t('cancel','إلغاء')}</button><button class="btn" type="submit">${t('save','حفظ')}</button></div></form>`)};
+F.accEditF=async fd=>{const p={name:fd.get('name').trim(),phone:fd.get('phone').trim()};if(fd.get('specialty')!=null)p.specialty=fd.get('specialty').trim();
+ DB.update('users',fd.get('uid'),p);audit(Auth.user()?.id,'admin','ACCOUNT_UPDATED',p.name);closeModal();toast(t('saved','تم الحفظ'));render()};
+A.accToggle=ds=>{const x=DB.get('users',ds.id);if(!x)return;DB.update('users',ds.id,{active:!x.active});
+ audit(Auth.user()?.id,'admin',x.active?'ACCOUNT_DISABLED':'ACCOUNT_ENABLED',x.name);render()};
+A.accReset=ds=>{openModal(`<h3 class="mb">${t('resetPw','إعادة تعيين كلمة المرور')}</h3>
+ <form data-form="accResetPw"><input type="hidden" name="uid" value="${ds.id}">
+ ${pwdField('np',t('newPw','كلمة المرور الجديدة'),'','pw1')}
+ <div class="mrow"><button type="button" class="btn ghost" data-act="closeModal">${t('cancel','إلغاء')}</button><button class="btn" type="submit">${t('save','حفظ')}</button></div></form>`)};
+F.accResetPw=async fd=>{checkPwPolicy(fd.get('np'));const salt=uid();
+ DB.update('users',fd.get('uid'),{salt,hash:await hashPw(fd.get('np'),salt)});
+ audit(Auth.user()?.id,'admin','PASSWORD_RESET','');closeModal();toast(t('pwReset','تم إعادة التعيين'))};
+C.logoPick=async el=>{const f=el.files[0];if(!f)return;if(f.size>5e5)return toast(t('logoBig','حجم اللوجو كبير (500KB كحد أقصى)'),'err');LOGO_PENDING=await readURL(f);toast(t('logoReady','سيُحفظ اللوجو عند الضغط على حفظ'),'info')};
+F.clinicSet=fd=>{const s=S();
+ ['clinicName','phone','address','workStart','workEnd','currency'].forEach(k=>{if(fd.get(k)!=null)s[k]=fd.get(k)});
+ s.appointmentDuration=+fd.get('appointmentDuration')||15;s.dailyLimit=+fd.get('dailyLimit')||20;s.consultationPrice=+fd.get('consultationPrice')||0;
+ s.workDays=fd.getAll('workDays').map(Number);s.bookingOpen=!!fd.get('bookingOpen');s.requireWorkingToday=!!fd.get('requireWorkingToday');
+ if(LOGO_PENDING){s.logo=LOGO_PENDING;LOGO_PENDING=null}
+ DB.save();audit(Auth.user()?.id,Auth.user()?.role,'SETTINGS_UPDATED','');toast(t('saved','تم الحفظ'));render()};
+A.startDay=()=>{const u=Auth.user();DB.update('users',u.id,{isWorking:true});
+ DB.all('users').filter(x=>x.role==='patient').forEach(p=>notify(p.id,`${t('docWorking','بدأ الطبيب العمل الآن — العيادة مفتوحة')}: ${u.name}`,'DOC_ON'));
+ audit(u.id,'doctor','START_DAY','');toast(t('dayStarted','تم بدء اليوم — حالتك: يعمل (ظاهر للجميع)'));render()};
+A.endDay=async()=>{if(!await confirmDlg(t('endDayQ','إنهاء اليوم؟ سيمنع حجز اليوم حسب الإعدادات.')))return;
+ const u=Auth.user();DB.update('users',u.id,{isWorking:false});audit(u.id,'doctor','END_DAY','');toast(t('dayEnded','تم إنهاء اليوم'),'info');render()};
+A.closeToday=()=>{const u=Auth.user();const cd=u.closedDates||[];if(!cd.includes(todayStr()))cd.push(todayStr());
+ DB.update('users',u.id,{closedDates:cd});audit(u.id,'doctor','CLOSE_BOOKING',todayStr());render()};
+A.openToday=()=>{const u=Auth.user();DB.update('users',u.id,{closedDates:(u.closedDates||[]).filter(d=>d!==todayStr())});render()};
+A.dayLimits=()=>{const u=Auth.user();
+ const rows=(u.dayLimits||[]).map((r,i)=>`<div class="row mb"><span class="chip">${fmtD(r.date)} — ${t('limit','الحد')}: ${r.limit}</span><button class="btn sm ghost" data-act="dlDel" data-i="${i}">${ic('x',14)}</button></div>`).join('');
+ openModal(`<h3 class="mb">${ic('chart',18)} ${t('dayLimits','حدود الحجوزات اليومية')}</h3>
+ <div class="hint">${t('dlHint','حدد تاريخًا وسقفًا للحجوزات — عند الوصول له يرى المريض: اكتمل العدد، احجز لبكره.')}</div>
+ ${rows||''}
+ <form data-form="dlAdd" class="mt"><div class="fgrid">
+  <div class="field"><input class="inp" type="date" name="date" min="${todayStr()}" required></div>
+  <div class="field"><input class="inp" type="number" name="limit" min="1" placeholder="${t('limit','الحد الأقصى')}" required></div></div>
+  <button class="btn sm" type="submit">${ic('plus',14)} ${t('add','إضافة حد ليوم معين')}</button></form>
+ <form data-form="dlDef" class="mt"><label class="flabel">${t('defaultLimit','الحد اليومي الافتراضي')}</label>
+  <div class="row"><input class="inp" type="number" name="d" min="1" value="${u.dailyLimit??''}" style="max-width:140px"><button class="btn sm" type="submit">${t('save','حفظ')}</button></div></form>
+ <div class="mrow"><button class="btn ghost" data-act="closeModal">${t('close','إغلاق')}</button></div>`)};
+F.dlAdd=fd=>{const u=Auth.user();const dl=u.dayLimits||[];dl.push({date:fd.get('date'),limit:+fd.get('limit')});DB.update('users',u.id,{dayLimits:dl});A.dayLimits()};
+A.dlDel=ds=>{const u=Auth.user();DB.update('users',u.id,{dayLimits:(u.dayLimits||[]).filter((_,i)=>i!==+ds.i)});A.dayLimits()};
+F.dlDef=fd=>{const u=Auth.user();DB.update('users',u.id,{dailyLimit:+fd.get('d')||null});toast(t('saved','تم الحفظ'));A.dayLimits()};
+F.docSet=fd=>{const u=Auth.user();
+ DB.update('users',u.id,{name:fd.get('name').trim(),phone:fd.get('phone').trim(),specialty:fd.get('specialty').trim(),
+ price:fd.get('price')===''?null:+fd.get('price'),duration:fd.get('duration')===''?null:+fd.get('duration'),
+ dailyLimit:fd.get('dailyLimit')===''?null:+fd.get('dailyLimit'),bookingOpen:!!fd.get('bookingOpen')});
+ toast(t('saved','تم الحفظ'));render()};
+A.qNext=()=>{const u=Auth.user();const w=svc.tickets(u.id).find(q=>q.status==='waiting');
+ if(!w)throw Err(t('noWaiting','لا يوجد مرضى منتظرون'));svc.qCall(w.id,u.id);render()};
+A.qCall=ds=>{svc.qCall(ds.id,Auth.user()?.id);render()};
+A.qStart=ds=>{svc.qStart(ds.id);location.hash='#/doctor/consult/'+ds.id};
+A.qSkip=async ds=>{if(await confirmDlg(t('skipQ','تخطي هذا المريض؟'))){svc.qSkip(ds.id,Auth.user()?.id);render()}};
+A.qRecall=ds=>{svc.qRecall(ds.id);render()};
+A.rxAddRow=()=>{const div=document.createElement('div');div.className='rxrow';
+ div.innerHTML=`<input class="inp" name="medicine" placeholder="${t('medicine','الدواء')}" required>
+ <input class="inp" name="dose" placeholder="${t('dose','الجرعة')}">
+ <input class="inp" name="frequency" placeholder="${t('freq','التكرار')}">
+ <input class="inp" name="duration" placeholder="${t('duration','المدة')}">
+ <input class="inp" name="instructions" placeholder="${t('instr','تعليمات')}">
+ <button type="button" class="icon-btn" data-act="rxDelRow">${ic('x',16)}</button>`;
+ $('#rxRows').appendChild(div)};
+A.rxDelRow=(ds,el)=>el.closest('.rxrow')?.remove();
+const collectRx=()=>$$('#rxRows .rxrow').map(r=>({medicine:r.querySelector('[name=medicine]').value.trim(),dose:r.querySelector('[name=dose]').value.trim(),frequency:r.querySelector('[name=frequency]').value.trim(),duration:r.querySelector('[name=duration]').value.trim(),instructions:r.querySelector('[name=instructions]').value.trim()})).filter(r=>r.medicine);
+F.consult=async(fd,f)=>{
+ const data={chiefComplaint:fd.get('cc')||'',symptoms:fd.get('sym')||'',vitals:{bp:fd.get('bp')||'',pulse:fd.get('pu')||'',temp:fd.get('te')||'',weight:fd.get('we')||''},examination:fd.get('ex')||'',diagnosis:(fd.get('dg')||'').trim(),notes:fd.get('nt')||'',treatment:fd.get('tr')||'',followUp:fd.get('fu')||''};
+ if(!data.diagnosis)throw Err(t('diagReq','التشخيص مطلوب'));
+ const items=collectRx();
+ svc.saveVisit(f.dataset.ticket,data,{items,notes:fd.get('rxnotes')||''},Auth.user()?.id);
+ toast(t('visitSaved','تم حفظ الكشف'+(items?' والروشتة':'')));location.hash='#/doctor/queue'};
+F.rxNew=async fd=>{const items=collectRx();
+ if(!items.length)throw Err(t('addMedFirst','أضف دواء واحدًا على الأقل'));
+ if(!fd.get('patientId'))throw Err(t('choosePat','اختر المريض'));
+ const rx=svc.saveRx({patientId:fd.get('patientId'),doctorId:Auth.user().id,items,notes:fd.get('notes'),diagnosis:fd.get('diagnosis')},Auth.user()?.id);
+ $$('#rxRows .rxrow').forEach(r=>r.remove());toast(t('rxSaved','تم حفظ الروشتة'));
+ await showRxModal(rx)};
+A.rxView=async ds=>{const rx=DB.get('prescriptions',ds.id);if(!rx)return;await showRxModal(rx)};
+C.slots=el=>renderSlots(el.closest('form'));
+A.pickSlot=(ds,el)=>{const f=el.closest('form');f.querySelector('[name=time]').value=ds.time;
+ f.querySelectorAll('.slot').forEach(b=>b.classList.remove('sel'));el.classList.add('sel')};
+F.book=fd=>{const u=Auth.user();if(!fd.get('time'))throw Err(t('pickSlot','اختر موعدًا من القائمة'));
+ svc.book({patientId:u.id,doctorId:fd.get('doctorId'),date:fd.get('date'),time:fd.get('time'),by:u.id});
+ toast(t('booked','تم تأكيد حجزك — تابع رقمك من الطابور 🎉'));location.hash='#/patient'};
+A.patSelfCheckin=ds=>{try{svc.checkIn(ds.id,Auth.user()?.id);toast(t('checkedInOk','تم تسجيل وصولك وأخذ رقمك في الطابور'));render()}catch(e){toast(e.message,'err')}};
+A.pickPat=ds=>{const pid=$('#recPid');if(pid)pid.value=ds.id;
+ const chip=$('#recPatChip');if(chip)chip.innerHTML=`<div class="mt"><span class="chip">${ic('check',13)} ${esc(ds.name)}</span></div>`;
+ const box=$('#patResults');if(box)box.innerHTML=''};
+A.quickPat=()=>{openModal(`<h3 class="mb">${t('quickAddPat','إضافة مريض سريع')}</h3>
+ <form data-form="quickPatF">
+  <div class="field"><label class="flabel">${t('name','الاسم')}</label><input class="inp" name="name" required></div>
+  <div class="field"><label class="flabel">${t('phone','الهاتف')}</label><input class="inp" name="phone" required dir="ltr"></div>
+  <div class="hint">${t('tempPw','كلمة المرور المؤقتة = رقم الهاتف (يغيّرها المريض لاحقًا من إعداداته)')}</div>
+  <div class="mrow"><button type="button" class="btn ghost" data-act="closeModal">${t('cancel','إلغاء')}</button><button class="btn" type="submit">${t('create','إنشاء')}</button></div></form>`)};
+F.quickPatF=async fd=>{const phone=fd.get('phone').trim();
+ if(DB.all('users').some(x=>x.phone===phone))throw Err(t('phoneUsed','الهاتف مستخدم بالفعل'));
+ const salt=uid();const p=DB.insert('users',{role:'patient',name:fd.get('name').trim(),phone,email:'',salt,hash:await hashPw(phone,salt),active:true});
+ audit(Auth.user()?.id,'receptionist','PATIENT_CREATED',p.name);closeModal();
+ const pid=$('#recPid');if(pid)pid.value=p.id;
+ const chip=$('#recPatChip');if(chip)chip.innerHTML=`<div class="mt"><span class="chip">${ic('check',13)} ${esc(p.name)}</span></div>`;
+ toast(t('patAdded','تمت إضافة المريض'))};
+F.recBook=fd=>{if(!fd.get('patientId'))throw Err(t('pickPatFirst','اختر المريض أولًا'));
+ if(!fd.get('time'))throw Err(t('pickSlot','اختر موعدًا من القائمة'));
+ svc.book({patientId:fd.get('patientId'),doctorId:fd.get('doctorId'),date:fd.get('date'),time:fd.get('time'),by:Auth.user()?.id});
+ toast(t('bookedR','تم تأكيد الحجز'));location.hash='#/reception/appointments'};
+C.recDate=el=>{location.hash='#/reception/appointments?date='+el.value};
+C.docDate=el=>{location.hash='#/doctor/appointments?date='+el.value};
+A.apptCheckin=ds=>{try{svc.checkIn(ds.id,Auth.user()?.id);toast(t('checkedInOk','تم تسجيل الوصول وإضافة المريض للطابور'));render()}catch(e){toast(e.message,'err')}};
+A.apptCancel=async ds=>{if(!await confirmDlg(t('cancelQ','تأكيد إلغاء هذا الموعد؟')))return;
+ svc.cancelAppt(ds.id,Auth.user()?.id);toast(t('apptCancelled','تم إلغاء الموعد'));render()};
+A.apptPay=ds=>{const a=DB.get('appointments',ds.id);if(!a)return;
+ openModal(`<h3 class="mb">${t('payNow','تسجيل دفع الكشف')}</h3>
+ <div class="card pad" style="box-shadow:none"><b style="font-size:20px">${money(a.price)}</b><br><small style="color:var(--muted)">${esc(DB.get('users',a.patientId)?.name||'')} — ${fmtD(a.date)} ${a.time}</small></div>
+ <div class="field mt"><label class="flabel">${t('method','طريقة الدفع')}</label>
+ <select class="inp" id="payMethod"><option value="cash">${t('cashM','نقدي')}</option><option value="card">${t('card','بطاقة')}</option></select></div>
+ <div class="mrow"><button class="btn ghost" data-act="closeModal">${t('cancel','إلغاء')}</button><button class="btn oks" id="payOk">${ic('cash',16)} ${t('confirmPay','تأكيد الدفع')}</button></div>`);
+ $('#payOk').onclick=()=>{try{svc.pay(ds.id,$('#payMethod').value,Auth.user());closeModal();toast(t('paidOk','تم الدفع — وصل الإشعار للمريض وزاد الإيراد'));render()}catch(e){toast(e.message,'err')}}};
+F.medInfo=fd=>{const u=Auth.user(),pid=fd.get('pid');
+ if(u.role==='patient'&&u.id!==pid)throw Err(t('notAllowed','غير مصرح'));
+ if(u.role==='doctor'&&!DB.all('appointments').some(a=>a.patientId===pid&&a.doctorId===u.id))throw Err(t('notAllowed','غير مصرح'));
+ DB.update('users',pid,{allergies:fd.get('allergies')||'',chronic:fd.get('chronic')||'',conditions:fd.get('conditions')||'',medications:fd.get('medications')||'',medicalNotes:fd.get('medicalNotes')||''});
+ audit(u.id,u.role,'MEDICAL_RECORD_UPDATED',pid);toast(t('saved','تم الحفظ'))};
+F.fileUp=async(fd,f)=>{const file=f.querySelector('[name=file]').files[0];
+ if(!file)throw Err(t('pickFileFirst','اختر ملفًا'));
+ if(!/^image\//.test(file.type)&&file.type!=='application/pdf')throw Err(t('badType','النوع غير مسموح — صورة أو PDF فقط'));
+ if(file.size>1.5e6)throw Err(t('bigFile','حجم الملف أكبر من 1.5MB'));
+ const dataUrl=await readURL(file);
+ svc.addFile({patientId:Auth.user().id,name:(fd.get('name')||file.name).trim(),kind:fd.get('kind'),fileName:file.name,mime:file.type,dataUrl,size:file.size,by:Auth.user().id});
+ toast(t('uploaded','تم رفع الملف'));render()};
+A.fileView=ds=>{const f=DB.get('medical_files',ds.id);if(!f)return;
+ const body=/^image\//.test(f.mime)?`<img class="rximg" src="${f.dataUrl}">`:`<iframe src="${f.dataUrl}" style="width:100%;height:70vh;border:none;border-radius:10px"></iframe>`;
+ openModal(`<h3 class="mb">${esc(f.name)}</h3>${body}<div class="mrow"><a class="btn" href="${f.dataUrl}" download="${esc(f.fileName||f.name)}">${ic('download',16)} ${t('download','تحميل')}</a><button class="btn ghost" data-act="closeModal">${t('close','إغلاق')}</button></div>`,'wide')};
+C.chatAttach=async el=>{const f=el.files[0];if(!f)return;
+ if(f.size>1.5e6){toast(t('bigFile','حجم الملف أكبر من 1.5MB'),'err');el.value='';return}
+ CHAT_PENDING={fileName:f.name,mime:f.type,dataUrl:await readURL(f)};
+ const chip=$('#attChip');if(chip)chip.innerHTML=`<span class="chip">📎 ${esc(f.name)} <button style="border:none;background:none;color:inherit" data-act="attRm">${ic('x',12)}</button></span>`};
+A.attRm=()=>{CHAT_PENDING=null;const c=$('#attChip');if(c)c.innerHTML='';const f=$('#chatFile');if(f)f.value=''};
+F.chat=async(fd,f)=>{const u=Auth.user();const body=(fd.get('body')||'').trim();
+ if(!body&&!CHAT_PENDING)throw Err(t('typeMsgFirst','اكتب رسالة أو أرفق ملفًا'));
+ const patientId=u.role==='patient'?u.id:f.dataset.pid;
+ svc.sendMsg({patientId,senderId:u.id,senderRole:u.role,body,attachment:CHAT_PENDING});
+ CHAT_PENDING=null;render()};
+F.staffProfile=fd=>{DB.update('users',Auth.user().id,{name:fd.get('name').trim(),phone:fd.get('phone').trim()});toast(t('saved','تم الحفظ'));render()};
+F.patSet=fd=>{const u=Auth.user();const email=(fd.get('email')||'').trim().toLowerCase();
+ if(email&&DB.all('users').some(x=>x.id!==u.id&&(x.email||'').toLowerCase()===email))throw Err(t('emailUsed','البريد مستخدم بالفعل'));
+ DB.update('users',u.id,{name:fd.get('name').trim(),phone:fd.get('phone').trim(),email,dob:fd.get('dob')||'',gender:fd.get('gender')||'',address:fd.get('address')||'',emergencyContact:fd.get('emergencyContact')||''});
+ toast(t('saved','تم الحفظ'));render()};
+function doPatSearch(el){const q=el.value.trim();const box=el.closest('.card')?.querySelector('#patResults')||$('#patResults');
+ if(!box)return;if(q.length<2){box.innerHTML='';return}
+ const res=DB.all('users').filter(x=>x.role==='patient'&&x.active&&((x.name||'').includes(q)||(x.phone||'').includes(q))).slice(0,8);
+ box.innerHTML=res.length?`<div class="card pad mt" style="box-shadow:none">${res.map(p=>`<div class="qrow" style="cursor:pointer" data-act="pickPat" data-id="${p.id}" data-name="${esc(p.name)}">${av(p)}<div style="flex:1"><b>${esc(p.name)}</b><br><small style="color:var(--muted)" dir="ltr">${esc(p.phone||'')}</small></div>${ic('plus',16)}</div>`).join('')}</div>`:`<div class="hint">${t('noResult','لا نتائج مطابقة')}</div>`}
+function parseHash(){const h=(location.hash||'').replace(/^#\/?/,'');const[path,q]=h.split('?');return{segs:path.split('/').filter(Boolean),params:new URLSearchParams(q||'')}}
+let renderToken=0;
+async function render(){const tk=++renderToken;
+ try{
+  const u=Auth.user();const{segs,params}=parseHash();const root=segs[0]||'';
+  const roleRoot={admin:'admin',doctor:'doctor',reception:'receptionist',manager:'manager',patient:'patient'};
+  if(roleRoot[root]){if(!u){location.replace('#/login');return}if(u.role!==roleRoot[root]){location.replace(homeOf(u.role));return}}
+  else if(root==='login'||root==='register'){if(u){location.replace(homeOf(u.role));return}}
+  else if(!root&&u){location.replace(homeOf(u.role));return}
+  const key=segs.slice(0,2).join('/');
+  const view=VIEWS[key]||VIEWS[root]||VIEWS.home;
+  const html=await view({u,segs,params});
+  if(tk!==renderToken)return;
+  $('#app').innerHTML=html;
+  document.title=S().clinicName||'عيادتي';
+  const th=$('#thread');if(th)th.scrollTop=th.scrollHeight;
+ }catch(e){console.error(e);
+  $('#app').innerHTML=`<div class="auth"><div class="formside"><div class="abox card">${emptyHtml(t('errPage','حدث خطأ غير متوقع'),e.message)}<button class="btn" onclick="location.hash='#/';location.reload()">${t('reload','إعادة التحميل')}</button></div></div></div>`}}
+document.addEventListener('click',async e=>{
+ const actEl=e.target.closest('[data-act]');
+ if(!e.target.closest('.drop')){const keep=actEl?.dataset.dropTarget;$$('.drop.open').forEach(d=>{if(!keep||d.id!==keep.slice(1))d.classList.remove('open')})}
+ if(e.target.closest('a.side-link')){const s=$('#side'),o=$('#ovl');if(s&&s.classList.contains('open')){s.classList.remove('open');o?.classList.remove('show')}}
+ if(!actEl)return;
+ const fn=A[actEl.dataset.act];
+ if(fn){e.preventDefault();try{await fn(actEl.dataset,actEl,e)}catch(err){toast(err.message,'err')}}});
+document.addEventListener('submit',async e=>{
+ const f=e.target,fn=F[f.dataset.form];if(!fn)return;e.preventDefault();
+ const btn=f.querySelector('[type=submit]');if(btn){btn.classList.add('loading');btn.disabled=true}
+ try{await fn(new FormData(f),f)}catch(err){toast(err.message||t('err','حدث خطأ'),'err')}
+ finally{if(btn&&document.contains(btn)){btn.classList.remove('loading');btn.disabled=false}}});
+document.addEventListener('input',e=>{const el=e.target;
+ if(el.dataset.strength)paintStrength(el.value,el.dataset.strength);
+ if(el.dataset.change==='searchPat'){clearTimeout(el._t);el._t=setTimeout(()=>doPatSearch(el),280)}});
+document.addEventListener('change',e=>{const fn=C[e.target.dataset.change];if(fn)fn(e.target,e)});
+const isTyping=()=>{const a=document.activeElement;return a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')};
+function safeRefresh(){if(isTyping()){setTimeout(safeRefresh,1500);return}render()}
+window.addEventListener('storage',e=>{if(e.key===CONFIG.KEY&&e.newValue){try{DB.data=JSON.parse(e.newValue)}catch(x){return}safeRefresh()}});
+setInterval(async()=>{if(document.hidden)return;
+ if(CONFIG.MODE==='server'){try{const r=await fetch(CONFIG.API_BASE+'/db',{cache:'no-store'});
+  if(r.ok){const j=await r.json();if(j&&j.settings&&(j.settings._rev||0)!==(DB.data.settings._rev||0)){DB.data=j;safeRefresh()}}}catch(e){}}
+ else{const h=location.hash||'';
+  if(h.startsWith('#/patient/queue')||h.startsWith('#/doctor/queue')||h==='#/patient'||h==='#/doctor'||h.startsWith('#/reception'))safeRefresh()}},CONFIG.POLL);
+window.addEventListener('hashchange',render);
+(async function init(){
+ applyTheme();applyLang();
+ await DB.load();
+ 
+ if(!location.hash)location.hash=Auth.user()?homeOf(Auth.user().role):'#/';
+ await render();
+})();
+</script>
+</body>
+</html>
