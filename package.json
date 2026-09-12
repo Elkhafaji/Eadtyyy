@@ -1,0 +1,12 @@
+{
+  "name": "eyadaty-clinic-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Single-clinic medical management system with a local SQLite database",
+  "type": "commonjs",
+  "dependencies": {
+    "pg": "^8.16.3"
+  },
+  "engines": { "node": "22.x" },
+  "scripts": { "start": "node local-server.cjs", "dev": "node --watch local-server.cjs", "migrate:postgres": "node scripts/migrate-sqlite-to-postgres.js" }
+}
